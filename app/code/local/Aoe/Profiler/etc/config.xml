@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<modules>
+		<Aoe_Profiler>
+			<version>0.1.0</version>
+		</Aoe_Profiler>
+	</modules>
+
+	<global>
+		<helpers>
+			<aoe_profiler>
+				<class>Aoe_Profiler_Helper</class>
+			</aoe_profiler>
+		</helpers>
+		<blocks>
+			<aoe_profiler>
+				<class>Aoe_Profiler_Block</class>
+			</aoe_profiler>
+            <core>
+                <rewrite>
+                    <profiler>Aoe_Profiler_Block_Profiler</profiler>
+                </rewrite>
+            </core>
+		</blocks>
+	</global>
+
+</config>
