@@ -199,8 +199,6 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 		// adding js
 		$output .= '<script type="text/javascript">'.Mage::helper('aoe_profiler')->getSkinFileContent('aoe_profiler/js/profiler.js').'</script>';
 
-
-
 		return $output;
 	}
 
@@ -232,8 +230,8 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 			<li class="captions captions-line">
 				<div class="info">
 					<div class="label">'.$this->__('Name').'
-						<a id="expand-all" href="#">[Expand all]</a>
-						<a id="collapse-all" href="#">[Collapse all]</a>
+						<a id="expand-all" href="#">['.$this->__('expand all').']</a>
+						<a id="collapse-all" href="#">['.$this->__('collapse all').']</a>
 					</div>';
 		$captions .= '<div class="columns">';
 		foreach ($this->metrics as $metric) {
