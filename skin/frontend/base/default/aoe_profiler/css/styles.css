@@ -10,6 +10,8 @@
     font-size: 40px;
     margin: 20px 0;
     text-align: left;
+    line-height: 40px;
+    font-weight: normal;
 }
 #profiler a {
     color: black;
@@ -36,7 +38,7 @@
 #profiler .captions .info:hover {
     background-color: inherit;
 }
-#profiler .column3 {
+#profiler .profiler-column3 {
     float: right;
     width: 216px;
     min-height: 1em;
@@ -83,10 +85,10 @@
     position: absolute;
     padding-left: 4px;
 }
-#profiler .columns {
+#profiler .profiler-columns {
     float: right;
 }
-#profiler .column {
+#profiler .profiler-column {
     float: left;
     width: 210px;
     min-height: 1em;

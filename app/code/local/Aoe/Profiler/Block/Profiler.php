@@ -45,7 +45,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 					}
 					$output .= '</div>';
 
-					$output .= '<div class="columns">';
+					$output .= '<div class="profiler-columns">';
 					foreach ($this->metrics as $metric) {
 
 						$output .= '<div class="metric">';
@@ -59,7 +59,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 								'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' ' . $this->units[$metric],
 								'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' ' . $this->units[$metric]
 							);
-							$output .= '<div class="'.$metric.' column">'. $progressBar . '</div>';
+							$output .= '<div class="'.$metric.' profiler-column">'. $progressBar . '</div>';
 
 						$output .= '</div>';
 
@@ -213,10 +213,10 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 		$captions = '<ul>
 			<li class="captions">
 				<div class="info">';
-		$captions .= '<div class="columns">';
+		$captions .= '<div class="profiler-columns">';
 		foreach ($this->metrics as $metric) {
 			$captions .= '<div class="metric">';
-				$captions .= '<div class="column3">';
+				$captions .= '<div class="profiler-column3">';
 				$captions .= $this->__($metric);
 				$captions .= '</div>';
 			$captions .= '</div>';
@@ -233,11 +233,11 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 						<a id="expand-all" href="#">['.$this->__('expand all').']</a>
 						<a id="collapse-all" href="#">['.$this->__('collapse all').']</a>
 					</div>';
-		$captions .= '<div class="columns">';
+		$captions .= '<div class="profiler-columns">';
 		foreach ($this->metrics as $metric) {
 			$formatterMethod = 'format_'.$metric;
 			$captions .= '<div class="metric">';
-				$captions .= '<div class="column3">';
+				$captions .= '<div class="profiler-column3">';
 				$captions .= $helper->$formatterMethod($this->stackLog['timetracker_0'][$metric.'_total']) . ' ' . $this->units[$metric];
 				$captions .= '</div>';
 			$captions .= '</div>';
