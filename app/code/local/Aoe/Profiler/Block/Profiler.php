@@ -1,19 +1,27 @@
 <?php
 
+/**
+ * Profiler output block
+ *
+ * @author Fabrizio Branca
+ */
 class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 
 	protected $stackLog;
 	protected $hideLinesFasterThan = 10;
-	protected $highlightLinesSlowerThan = 200;
 	protected $metrics = array('time', 'realmem' /*, 'emalloc' */);
 	protected $units = array('time' => 'ms', 'realmem' => 'MB', 'emalloc' => 'MB');
-	protected $maxValues = array();
 
-
-	public function renderLine(array $data) {
+	/**
+	 * Render tree
+	 *
+	 * @param array $data
+	 * @return string
+	 */
+	public function renderTree(array $data) {
 
 		$helper = Mage::helper('aoe_profiler'); /* @var $helper Aoe_Profiler_Helper_Data */
-		$output = '<ul>';
+		$output = '';
 		foreach ($data as $key => $uniqueId) {
 			if (strpos($key, '_children') === false) {
 
@@ -22,13 +30,16 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 				$hasChildren = isset($data[$key . '_children']) && count($data[$key . '_children']) > 0;
 
 				$output .= '<li class="'.($tmp['level']>1?'collapsed':'').' level-'.$tmp['level'] .' '.($hasChildren ? 'has-children' : '').'">';
+
 				$output .= '<div class="info">';
 
-					$slowLine = ($tmp['time_total'] * 1000 > $this->highlightLinesSlowerThan);
 
-					$output .= '<div class="label '.($slowLine ? 'slow' : '').'">';
+					$output .= '<div class="label">';
 					if ($hasChildren) {
-						$output .= '<a id="'.$uniqueId.'" href="#'.$uniqueId.'" class="toggle">'.end($tmp['stack']).'</a>';
+						$output .= '<a id="'.$uniqueId.'" href="#'.$uniqueId.'" class="toggle">';
+						$output .= '<div class="profiler-open"><img src="'.$this->getSkinUrl('aoe_profiler/img/button-open.png').'" /></div>';
+						$output .= '<div class="profiler-closed"><img src="'.$this->getSkinUrl('aoe_profiler/img/button-closed.png').'" /></div>';
+						$output .= end($tmp['stack']).'</a>';
 					} else {
 						$output .= '<span>'.end($tmp['stack']).'</span>';
 					}
@@ -41,11 +52,14 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 
 							$formatterMethod = 'format_'.$metric;
 
-							foreach (array('total', 'own', 'sub') as $column) {
-								$label = $helper->$formatterMethod($tmp[$metric.'_'.$column]);
-								$percent = $tmp[$metric.'_rel_'.$column] * 100;
-								$output .= '<div class="'.$metric.' '.$column.' column">'. $this->renderProgressBar($label, $percent) . '</div>';
-							}
+							$progressBar = $this->renderProgressBar(
+								$tmp[$metric.'_rel_own'] * 100,
+								$tmp[$metric.'_rel_sub'] * 100,
+								$tmp[$metric.'_rel_offset'] * 100,
+								'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' ' . $this->units[$metric],
+								'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' ' . $this->units[$metric]
+							);
+							$output .= '<div class="'.$metric.' column">'. $progressBar . '</div>';
 
 						$output .= '</div>';
 
@@ -55,16 +69,24 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 				// $output .= '<pre>'.var_export($tmg prop,1) . '</pre>';
 
 				$output .= '</div>';
+
 				if (isset($data[$key . '_children'])) {
-					$output .= $this->renderLine($data[$key . '_children']);
+					$output .= '<ul>';
+					$output .= $this->renderTree($data[$key . '_children']);
+					$output .= '</ul>';
 				}
 				$output .= '</li>';
 			}
 		}
-		$output .= '</ul>';
 		return $output;
 	}
 
+	/**
+	 * Update values
+	 *
+	 * @param $arr
+	 * @param string $vKey
+	 */
 	protected function updateValues(&$arr, $vKey='') {
 		$subSum = array_flip($this->metrics);
 		foreach ($arr as $k => $v) {
@@ -99,6 +121,9 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 		}
 	}
 
+	/**
+	 * Calculate relative values
+	 */
 	protected function calcRelativeValues() {
 		foreach ($this->stackLog as $key => $value) {
 			foreach ($this->metrics as $metric) {
@@ -108,10 +133,16 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 					}
 					$this->stackLog[$key][$metric.'_rel_'.$column] = $this->stackLog[$key][$metric.'_'.$column] / $this->stackLog['timetracker_0'][$metric.'_total'];
 				}
+				$this->stackLog[$key][$metric.'_rel_offset'] = $this->stackLog[$key][$metric.'_start_relative'] / $this->stackLog['timetracker_0'][$metric.'_total'];
 			}
 		}
 	}
 
+	/**
+	 * To HTML
+	 *
+	 * @return string
+	 */
 	protected function _toHtml() {
 
 		if (!$this->_beforeToHtml()
@@ -120,6 +151,23 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 			return '';
 		}
 
+		// Adding css. Want to be as obtrusive as possible and not add any file to the header (as bundling might be influenced by this)
+		// That's why I'm embedding css here into the html code...
+		$output = '<style type="text/css">'.Mage::helper('aoe_profiler')->getSkinFileContent('aoe_profiler/css/styles.css').'</style>';
+
+		if (!Varien_Profiler::isEnabled()) {
+			$url = Mage::helper('core/url')->getCurrentUrl();
+			$url .= (strpos($url, '?') === false) ? '?' : '&';
+			$url .= 'profile=1#profiler';
+
+			$output .= '<div id="profiler">
+				<p class="hint">Add <a href="'.$url.'">?profile=1</a> to the url to enable <strong>profiling</strong>.</p>
+			</div>';
+
+			return $output;
+		}
+
+		// some data pre-processing
 		Varien_Profiler::calculate();
 		$this->stackLog = Varien_Profiler::getStackLog();
 
@@ -134,125 +182,35 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 
 		$this->calcRelativeValues();
 
-		// return '<pre style="background-color:white;">'.var_export($arr, 1).'</pre>';
+		$output .= '<div id="profiler"><h1>Profiler</h1>';
+
+		if ($this->hideLinesFasterThan) {
+			$output .= '<p>' . $this->__('(Hiding all entries faster than %s ms.)', $this->hideLinesFasterThan) . '</p>';
+		}
+
+		$output .= $this->renderHeader();
+
+		$output .= '<ul id="treeView" class="treeView">';
+		$output .= $this->renderTree($arr);
+		$output .= '</ul>';
+
+		$output .= '</div>';
+
+		// adding js
+		$output .= '<script type="text/javascript">'.Mage::helper('aoe_profiler')->getSkinFileContent('aoe_profiler/js/profiler.js').'</script>';
 
 
-		$styles = '<style>
-			#profiler {
-				background-color: white;
-				padding: 10px 20px 50px 0;
-				color: black;
-				font-family: Arial;
-			}
-			#profiler h1 {
-				font-size: 40px;
-				margin: 20px;
-			}
-			#profiler a {
-				color: black;
-				text-decoration: underline;
-			}
-			#profiler li.captions {
-				font-weight: bold;
-			}
-			#profiler li.captions-line {
-				border-bottom: 2px solid black;
-			}
-			#profiler ul {
-				border-left: 1px solid #ccc;
-				padding-left: 16px;
-				list-style: none outside none;
-			}
-			#profiler .level-1 ul {
-				background-color: rgba(0, 0, 0, 0.05);
-			}
-			#profiler .info:hover {
-				background-color: #FAD69D;
-			}
-			#profiler .captions .info:hover {
-				background-color: inherit;
-			}
-			#profiler .info {
-				overflow: hidden;
-			}
-			#profiler .label {
-				float: left;
-				position: absolute;
-				padding-left: 4px;
-			}
-			#profiler .columns {
-				margin-left: 500px;
-				float: left;
-			}
-			#profiler .column {
-				float: left;
-				width: 70px;
-				min-height: 1em;
-				text-align: center;
-				padding-right: 2px;
-			}
-			#profiler .column3 {
-				float: right;
-				width: 216px;
-				min-height: 1em;
-				text-align: center;
-			}
-			#profiler .metric {
-				float: left;
-				margin-right: 60px;
-				border: 1px solid black;
-				border-width: 0 1px;
-			}
-			#profiler .level-1 > .info .total {
-				font-weight: bold;
-				font-size: 1.2em;
-			}
-			#profiler .has-children > .info {
-				border-bottom:  1px solid #ccc;
-			}
-			#profiler .collapsed > ul {
-				display: none;
-			}
-			#profiler .slow, #profiler .slow a {
-				font-weight: bold;
-				color: #8b0000;
-			}
 
-			#profiler div.progress {
-				background: white none repeat scroll 0 0;
-				border: 1px solid #CCC;
-				margin: 2px;
-				float: left;
-				padding: 1px;
-				position: relative;
-				display: block;
-				width: 65px;
-			}
+		return $output;
+	}
 
-			#profiler div.progress-bar {
-				background-color: #fbab2f;
-				height: 15px;
-				vertical-align: middle;
-			}
-
-			#profiler div.progress-label {
-				position: absolute;
-				top: 0px;
-				left: 4px;
-				font-size: 11px;
-			}
-
-
-		</style>';
-		
-		$script = '<script type="text/javascript">
-			$$(".toggle").each(function(element) {
-				element.observe("click", function(event) {
-					Event.element(event).up("li").toggleClassName("collapsed");
-					event.stop();
-				})
-			});
-		</script>';
+	/**
+	 * Render header
+	 *
+	 * @return string
+	 */
+	protected function renderHeader() {
+		$helper = Mage::helper('aoe_profiler'); /* @var $helper Aoe_Profiler_Helper_Data */
 
 		$captions = '<ul>
 			<li class="captions">
@@ -260,7 +218,9 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 		$captions .= '<div class="columns">';
 		foreach ($this->metrics as $metric) {
 			$captions .= '<div class="metric">';
-				$captions .= '<div class="column3">'.$metric.' [in '.$this->units[$metric].']</div>';
+				$captions .= '<div class="column3">';
+				$captions .= $this->__($metric);
+				$captions .= '</div>';
 			$captions .= '</div>';
 		}
 		$captions .= '</div>';
@@ -271,13 +231,17 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 		$captions .= '<ul>
 			<li class="captions captions-line">
 				<div class="info">
-					<div class="label">Name</div>';
+					<div class="label">'.$this->__('Name').'
+						<a id="expand-all" href="#">[Expand all]</a>
+						<a id="collapse-all" href="#">[Collapse all]</a>
+					</div>';
 		$captions .= '<div class="columns">';
 		foreach ($this->metrics as $metric) {
+			$formatterMethod = 'format_'.$metric;
 			$captions .= '<div class="metric">';
-			foreach (array('total', 'own', 'sub') as $column) {
-				$captions .= '<div class="column">'.ucfirst($column).'</div>';
-			}
+				$captions .= '<div class="column3">';
+				$captions .= $helper->$formatterMethod($this->stackLog['timetracker_0'][$metric.'_total']) . ' ' . $this->units[$metric];
+				$captions .= '</div>';
 			$captions .= '</div>';
 		}
 		$captions .= '</div>';
@@ -285,17 +249,38 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 			</li>
 		</ul>';
 
-		return $styles . '<div id="profiler"><h1>Profiler</h1>'.$captions . $this->renderLine($arr).'</div>' . $script;
+		return $captions;
 	}
 
-	protected function renderProgressBar($label, $percent) {
-		$percent = max(0, $percent);
-		$percent = round($percent);
-		return '
-		<div class="progress">
-			<div class="progress-bar" style="width: '.$percent.'%" ></div>
-			<div class="progress-label">'.$label.'</div>
-		</div>';
+	/**
+	 * Render css progress bar
+	 *
+	 * @param $percent
+	 * @param int $percent2
+	 * @param int $offset
+	 * @param string $percentLabel
+	 * @param string $percent2Label
+	 * @return string
+	 */
+	protected function renderProgressBar($percent, $percent2=0, $offset=0, $percentLabel='', $percent2Label='') {
+		$percent = round(max(1, $percent));
+		$percent2 = round(max(1, $percent2));
+		$offset = round(max(0, $offset));
+
+		if ($percent + $percent2 + $offset > 100) {
+			$percent2 = 100 - $percent - $offset;
+		}
+
+		// preventing line break in css progress bar if widhs and margins are bigger than 100%
+		$output = '<div class="progress">';
+			$output .= '<div class="progress-bar">';
+				$output .= '<div class="progress-bar1" style="width: '.$percent.'%; margin-left: '.$offset.'%;" title="'.$percentLabel.'"></div>';
+				if ($percent2) {
+					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"  title="'.$percent2Label.'"></div>';
+				}
+				$output .= '</div>';
+		$output .= '</div>';
+		return $output;
 	}
 
 	/**

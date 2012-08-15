@@ -1,0 +1,147 @@
+#profiler {
+    background-color: white;
+    padding: 10px 20px 50px 20px;
+    color: black;
+    font-family: Arial;
+    font-size: 14px;
+    line-height: 14px;
+}
+#profiler h1 {
+    font-size: 40px;
+    margin: 20px 0;
+    text-align: left;
+}
+#profiler a {
+    color: black;
+    text-decoration: none;
+}
+#profiler li.captions {
+    font-weight: bold;
+}
+#profiler li.captions-line {
+    border-bottom: 2px solid black;
+}
+#profiler li.captions-line .metric {
+    font-size: 25px;
+    line-height: 25px;
+}
+#profiler ul {
+    padding: 0;
+    list-style: none outside none;
+}
+#profiler .level-1 ul {
+    background-color: rgba(0, 0, 0, 0.03);
+    padding-left: 16px;
+}
+#profiler .captions .info:hover {
+    background-color: inherit;
+}
+#profiler .column3 {
+    float: right;
+    width: 216px;
+    min-height: 1em;
+    text-align: center;
+}
+#profiler .level-1 > .info .total {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+#profiler .collapsed > ul {
+    display: none;
+}
+#profiler .slow, #profiler .slow a {
+    font-weight: bold;
+    color: #8b0000;
+}
+
+#profiler .profiler-open,
+#profiler .profiler-closed {
+    position: absolute;
+    left: -11px;
+    top: 2px;
+}
+
+#profiler .profiler-closed {
+    display: none;
+}
+
+#profiler .collapsed > .info .profiler-closed {
+    display: block;
+}
+#profiler .collapsed > .info .profiler-open {
+    display: none;
+}
+
+#profiler .metric {
+    float: left;
+    margin-left: 30px;
+}
+#profiler .info { overflow: hidden; }
+#profiler .info:hover { background-color: #FAD69D; }
+#profiler .label {
+    float: left;
+    position: absolute;
+    padding-left: 4px;
+}
+#profiler .columns {
+    float: right;
+}
+#profiler .column {
+    float: left;
+    width: 210px;
+    min-height: 1em;
+    text-align: center;
+    padding-right: 2px;
+}
+
+
+#profiler #treeView .label {
+    margin-top: 4px;
+}
+
+#profiler #expand-all,
+#profiler #collapse-all {
+    font-weight: normal;
+    font-size: 14px;
+}
+
+#profiler div.progress {
+    background: white none repeat scroll 0 0;
+    border: 1px solid #CCC;
+    margin: 2px;
+    float: left;
+    padding: 1px;
+    position: relative;
+    display: block;
+    width: 200px;
+}
+
+#profiler .info:hover div.progress {
+    -moz-box-shadow: 1px 2px 4px -1px #888;
+    -webkit-box-shadow: 1px 2px 4px -1px #888;
+    box-shadow: 1px 2px 4px -1px #888;
+}
+
+#profiler div.progress-bar1,
+#profiler div.progress-bar2 {
+    float: left;
+    background-color: #f08080;
+    height: 15px;
+    vertical-align: middle;
+}
+
+#profiler div.progress-bar2 {
+    background-color: #add8e6;
+}
+
+#profiler div.progress-label {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    font-size: 11px;
+    line-height: 11px;
+}
+
+#profiler .hint a {
+    text-decoration: underline;
+}

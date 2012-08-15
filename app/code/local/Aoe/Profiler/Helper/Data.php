@@ -18,4 +18,10 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 		return $res;
 	}
 
+	public function getSkinFileContent($file) {
+		$path = Mage::getSingleton('core/design_package')->getFilename($file, array('_type' => 'skin'));
+		$content = file_get_contents($path);
+		return $content;
+	}
+
 }
