@@ -5,15 +5,17 @@
  *
  * @author Fabrizio Branca
  */
-class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
+class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 	protected $stackLog;
-	protected $hideLinesFasterThan = 10;
+	protected $treeData;
+
+	protected $hideLinesFasterThan = 0;
 	protected $metrics = array('time', 'realmem' /*, 'emalloc' */);
 	protected $units = array('time' => 'ms', 'realmem' => 'MB', 'emalloc' => 'MB');
 
 	/**
-	 * Render tree
+	 * Render tree (recursive function)
 	 *
 	 * @param array $data
 	 * @return string
@@ -32,7 +34,6 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 				$output .= '<li class="'.($tmp['level']>1?'collapsed':'').' level-'.$tmp['level'] .' '.($hasChildren ? 'has-children' : '').'">';
 
 				$output .= '<div class="info">';
-
 
 					$output .= '<div class="label">';
 					if ($hasChildren) {
@@ -66,8 +67,6 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 					}
 					$output .= '</div>';
 
-				// $output .= '<pre>'.var_export($tmg prop,1) . '</pre>';
-
 				$output .= '</div>';
 
 				if (isset($data[$key . '_children'])) {
@@ -79,63 +78,6 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 			}
 		}
 		return $output;
-	}
-
-	/**
-	 * Update values
-	 *
-	 * @param $arr
-	 * @param string $vKey
-	 */
-	protected function updateValues(&$arr, $vKey='') {
-		$subSum = array_flip($this->metrics);
-		foreach ($arr as $k => $v) {
-
-			if (strpos($k, '_children') === false) {
-
-				// Filter
-				if ($this->stackLog[$v]['time_total'] * 1000 <= $this->hideLinesFasterThan) {
-					unset($this->stackLog[$v]);
-					unset($arr[$k]);
-					continue;
-				}
-
-				if (isset($arr[$k . '_children']) && is_array($arr[$k . '_children'])) {
-					$this->updateValues($arr[$k . '_children'], $v);
-				} else {
-					foreach ($subSum as $key => $value) {
-						$this->stackLog[$v][$key.'_sub'] = 0;
-						$this->stackLog[$v][$key.'_own'] = $this->stackLog[$v][$key.'_total'];
-					}
-				}
-				foreach ($subSum as $key => $value) {
-					$subSum[$key] += $this->stackLog[$v][$key.'_total'];
-				}
-			}
-		}
-		if (isset($this->stackLog[$vKey])) {
-			foreach ($subSum as $key => $value) {
-				$this->stackLog[$vKey][$key.'_sub'] = $subSum[$key];
-				$this->stackLog[$vKey][$key.'_own'] = $this->stackLog[$vKey][$key.'_total'] - $subSum[$key];
-			}
-		}
-	}
-
-	/**
-	 * Calculate relative values
-	 */
-	protected function calcRelativeValues() {
-		foreach ($this->stackLog as $key => $value) {
-			foreach ($this->metrics as $metric) {
-				foreach (array('own', 'sub', 'total') as $column) {
-					if (!isset($this->stackLog[$key][$metric.'_'.$column])) {
-						continue;
-					}
-					$this->stackLog[$key][$metric.'_rel_'.$column] = $this->stackLog[$key][$metric.'_'.$column] / $this->stackLog['timetracker_0'][$metric.'_total'];
-				}
-				$this->stackLog[$key][$metric.'_rel_offset'] = $this->stackLog[$key][$metric.'_start_relative'] / $this->stackLog['timetracker_0'][$metric.'_total'];
-			}
-		}
 	}
 
 	/**
@@ -151,36 +93,42 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 			return '';
 		}
 
+		if (!Varien_Profiler::isEnabled()) {
+			if (Mage::getStoreConfig('dev/debug/showDisabledMessage')) {
+
+				// Adding css. Want to be as obtrusive as possible and not add any file to the header (as bundling might be influenced by this)
+				// That's why I'm embedding css here into the html code...
+				$output = '<style type="text/css">'.Mage::helper('aoe_profiler')->getSkinFileContent('aoe_profiler/css/styles.css').'</style>';
+
+				$url = Mage::helper('core/url')->getCurrentUrl();
+				$url .= (strpos($url, '?') === false) ? '?' : '&';
+				$url .= 'profile=1#profiler';
+
+				$output .= '<div id="profiler">
+					<p class="hint">Add <a href="'.$url.'">?profile=1</a> to the url to enable <strong>profiling</strong>.</p>
+					<p class="hint">(This message can be hidden in System > Configuration > Developer > Profiler.)</p>
+				</div>';
+
+				return $output;
+			}
+			return;
+		}
+
+		$hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
+
+		$stackModel = Mage::getModel('aoe_profiler/stack'); /* @var $stackModel Aoe_Profiler_Model_Stack */
+
+		$stackModel
+			->loadStackLogFromProfiler()
+			->setHideLinesFasterThan($hideLinesFasterThan)
+			->processRawData();
+
+		$this->stackLog = $stackModel->getStackLog();
+		$this->treeData = $stackModel->getTreeData();
+
 		// Adding css. Want to be as obtrusive as possible and not add any file to the header (as bundling might be influenced by this)
 		// That's why I'm embedding css here into the html code...
 		$output = '<style type="text/css">'.Mage::helper('aoe_profiler')->getSkinFileContent('aoe_profiler/css/styles.css').'</style>';
-
-		if (!Varien_Profiler::isEnabled()) {
-			$url = Mage::helper('core/url')->getCurrentUrl();
-			$url .= (strpos($url, '?') === false) ? '?' : '&';
-			$url .= 'profile=1#profiler';
-
-			$output .= '<div id="profiler">
-				<p class="hint">Add <a href="'.$url.'">?profile=1</a> to the url to enable <strong>profiling</strong>.</p>
-			</div>';
-
-			return $output;
-		}
-
-		// some data pre-processing
-		Varien_Profiler::calculate();
-		$this->stackLog = Varien_Profiler::getStackLog();
-
-			// Create hierarchical array of keys pointing to the stack
-		$arr = array();
-		foreach ($this->stackLog as $uniqueId => $data) {
-			$this->createHierarchyArray($arr, $data['level'], $uniqueId);
-		}
-
-		$arr = end($arr);
-		$this->updateValues($arr);
-
-		$this->calcRelativeValues();
 
 		$output .= '<div id="profiler"><h1>Profiler</h1>';
 
@@ -191,7 +139,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 		$output .= $this->renderHeader();
 
 		$output .= '<ul id="treeView" class="treeView">';
-		$output .= $this->renderTree($arr);
+			$output .= $this->renderTree($this->treeData);
 		$output .= '</ul>';
 
 		$output .= '</div>';
@@ -279,27 +227,6 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Profiler {
 				$output .= '</div>';
 		$output .= '</div>';
 		return $output;
-	}
-
-	/**
-	 * Helper function for internal data manipulation
-	 *
-	 * @param	array		Array (passed by reference) and modified
-	 * @param	integer		Pointer value
-	 * @param	string		Unique ID string
-	 * @return	void
-	 */
-	protected function createHierarchyArray(&$arr, $pointer, $uniqueId) {
-		if (!is_array($arr)) {
-			$arr = array();
-		}
-		if ($pointer > 0) {
-			end($arr);
-			$k = key($arr);
-			$this->createHierarchyArray($arr[intval($k) . '_children'], $pointer - 1, $uniqueId);
-		} else {
-			$arr[] = $uniqueId;
-		}
 	}
 
 }

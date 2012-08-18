@@ -20,10 +20,17 @@ class Varien_Profiler {
 	static private $_enabled = false;
 	static private $_checkedEnabled = false;
 
+	/**
+	 * Check if profiler is enabled.
+	 *
+	 * @static
+	 * @return bool
+	 */
 	public static function isEnabled() {
 		if (!self::$_checkedEnabled) {
 			self::$_checkedEnabled = true;
-			if (isset($_GET['profile']) && $_GET['profile'] == true) {
+			if ((isset($_GET['profile']) && $_GET['profile'] == true)
+				|| (isset($_COOKIE['profile']) && $_COOKIE['profile'] == true)) {
 				self::enable();
 			}
 		}
@@ -35,10 +42,10 @@ class Varien_Profiler {
 	 * Pushes to the stack
 	 *
 	 * @param string $name
-	 * @param string $value
+	 * @param string $message
 	 * @return void
 	 */
-	public static function start($name, $value='') {
+	public static function start($name, $message='') {
 		if (!self::isEnabled()) {
 			return;
 		}
@@ -53,22 +60,25 @@ class Varien_Profiler {
 		self::$stackLog[$currentPointer] = array(
 			'level' => self::$stackLevel,
 			'stack' => self::$stack,
-			'value' => $value,
 			'time_start' => microtime(true),
 			'realmem_start' => memory_get_usage(true),
 		    'emalloc_start' => memory_get_usage(false),
 		);
+
+		if ($message) {
+			self::$stackLog[$currentPointer]['messages'] = array($message);
+		}
 	}
 
 	/**
 	 * Pull element from stack
 	 *
 	 * @param string $name
-	 * @param string $content
+	 * @param string $message
 	 * @throws Exception
 	 * @return void
 	 */
-	public static function stop($name, $content='') {
+	public static function stop($name, $message='') {
 		if (!self::isEnabled()) {
 			return;
 		}
@@ -90,8 +100,6 @@ class Varien_Profiler {
 				return;
 			}
 
-			// Mage::log(var_export(self::$stack, 1));
-
 			$name = '[INVALID NESTING!] ' . $name;
 			self::start($name);
 			// return;
@@ -102,15 +110,26 @@ class Varien_Profiler {
 		self::$stackLog[$currentPointer]['time_end'] = microtime(true);
 		self::$stackLog[$currentPointer]['realmem_end'] = memory_get_usage(true);
 		self::$stackLog[$currentPointer]['emalloc_end'] = memory_get_usage(false);
-		self::$stackLog[$currentPointer]['content'] = $content;
+
+		if ($message) {
+			if (!isset(self::$stackLog[$currentPointer]['messages'])) {
+				self::$stackLog[$currentPointer]['messages'] = array($message);
+			} else {
+				self::$stackLog[$currentPointer]['messages'][] = $message;
+			}
+		}
 
 		self::$stackLevel--;
 		array_pop(self::$stack);
 		array_pop(self::$currentPointerStack);
 	}
 
-
-    public static function enable() {
+	/**
+	 * Enabling profiler
+	 *
+	 * @return void
+	 */
+	public static function enable() {
 		self::$startValues = array(
 			'time' => microtime(true),
 			'realmem' => memory_get_usage(true),
@@ -119,30 +138,45 @@ class Varien_Profiler {
 		self::$_enabled = true;
     }
 
+	/**
+	 * Disabling profiler
+	 *
+	 * @return void
+	 */
     public static function disable() {
+
+		if (self::isEnabled()) {
+			// stop any timers still on stack (those might be stopped after calculation otherwise)
+			$stackCopy = self::$stack;
+			while ($timerName = array_pop($stackCopy)) {
+				self::stop($timerName);
+			}
+		}
 		self::$_enabled = false;
+
+		self::calculate();
     }
 
+	/**
+	 * Get raw stack log data
+	 *
+	 * @return void
+	 */
 	public static function getStackLog() {
+		if (self::isEnabled()) {
+			throw new Exception('Disable profiler first!');
+		}
 		return self::$stackLog;
 	}
 
 	public static function calculate() {
-		// stop any timers still on stack (those might be stopped after calculation otherwise)
-		$stackCopy = self::$stack;
-		while ($timerName = array_pop($stackCopy)) {
-			self::stop($timerName);
-		}
-
-		foreach (self::$stackLog as $uniqueId => &$data) {
+		foreach (self::$stackLog as &$data) {
 			foreach (array('time', 'realmem', 'emalloc') as $metric) {
 				$data[$metric.'_end_relative'] = $data[$metric.'_end'] - self::$startValues[$metric];
 				$data[$metric.'_start_relative'] = $data[$metric.'_start'] - self::$startValues[$metric];
 				$data[$metric.'_total'] = $data[$metric.'_end_relative'] - $data[$metric.'_start_relative'];
 			}
 		}
-
-		self::disable();
 	}
 
 }
