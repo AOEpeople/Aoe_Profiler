@@ -75,6 +75,18 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract {
 				if ($this->stackLog[$v]['time_total'] * 1000 < $this->hideLinesFasterThan) {
 					unset($this->stackLog[$v]);
 					unset($arr[$k]);
+					if (!isset($this->stackLog[$vKey]['hidden_count'])) {
+						$this->stackLog[$vKey]['hidden_count'] = 0;
+					}
+					$this->stackLog[$vKey]['hidden_count']++;
+					/*
+					foreach ($subSum as $key => $value) {
+						if (!isset($this->stackLog[$vKey]['hidden_' . $key])) {
+							$this->stackLog[$vKey]['hidden_' . $key] = 0;
+						}
+						$this->stackLog[$vKey]['hidden_' . $key] += $this->stackLog[$v][$key . '_total'];
+					}
+					*/
 					continue;
 				}
 

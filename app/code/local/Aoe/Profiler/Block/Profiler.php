@@ -7,27 +7,47 @@
  */
 class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
-	protected $stackLog;
-	protected $treeData;
-
+	/**
+	 * @var array metrics to be displayed
+	 */
 	protected $metrics = array('time', 'realmem' /*, 'emalloc' */);
-	protected $units = array('time' => 'ms', 'realmem' => 'MB', 'emalloc' => 'MB');
 
-	protected $typeIcons = array(
-		Varien_Profiler::TYPE_DEFAULT => 'page.png',
-		Varien_Profiler::TYPE_DATABASE => 'database.png',
-		Varien_Profiler::TYPE_TEMPLATE => 'template.png',
-		Varien_Profiler::TYPE_BLOCK => 'brick.png',
-		Varien_Profiler::TYPE_EVENT => 'anchor.png',
-		Varien_Profiler::TYPE_OBSERVER => 'pin.png',
+	/**
+	 * @var array units
+	 */
+	protected $units = array(
+		'time' => 'ms',
+		'realmem' => 'MB',
+		'emalloc' => 'MB'
 	);
+
+	/**
+	 * @var array type icons
+	 */
+	protected $typeIcons = array(
+		Varien_Profiler::TYPE_DEFAULT => 'aoe_profiler/img/led-icons/page.png',
+		Varien_Profiler::TYPE_DATABASE => 'aoe_profiler/img/led-icons/database.png',
+		Varien_Profiler::TYPE_TEMPLATE => 'aoe_profiler/img/led-icons/template.png',
+		Varien_Profiler::TYPE_BLOCK => 'aoe_profiler/img/led-icons/brick.png',
+		Varien_Profiler::TYPE_EVENT => 'aoe_profiler/img/led-icons/anchor.png',
+		Varien_Profiler::TYPE_OBSERVER => 'aoe_profiler/img/led-icons/pin.png',
+	);
+
+	/**
+	 * @var array stack log data
+	 */
+	protected $stackLog;
+
+	/**
+	 * @var array hierarchical representation of the stack log data
+	 */
+	protected $treeData;
 
 	/**
 	 * Get type icon
 	 *
 	 * @param $type
 	 * @param $label
-	 * @param $hasChildren
 	 * @return string
 	 */
 	protected function getType($type, $label) {
@@ -38,6 +58,8 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 				$type = Varien_Profiler::TYPE_EVENT;
 			} elseif (strpos($label, 'OBSERVER:') === 0) {
 				$type = Varien_Profiler::TYPE_OBSERVER;
+			} elseif (strpos($label, 'BLOCK:') === 0) {
+				$type = Varien_Profiler::TYPE_BLOCK;
 			}
 		}
 
@@ -79,7 +101,13 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 					$label = end($tmp['stack']);
 					$type = $this->getType($tmp['type'], $label);
-					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />' . htmlspecialchars($label) . '</span>';
+
+					$hiddenMessage = '';
+					if (isset($tmp['hidden_count'])) {
+						$hiddenMessage = ' <em>('.htmlspecialchars($tmp['hidden_count']).' hidden sub entries)</em>';
+					}
+
+					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />' . htmlspecialchars($label) . $hiddenMessage . '</span>';
 
 					$output .= $hasChildren ? '</a>' : '</span>';
 
@@ -96,8 +124,8 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 								$tmp[$metric.'_rel_own'] * 100,
 								$tmp[$metric.'_rel_sub'] * 100,
 								$tmp[$metric.'_rel_offset'] * 100,
-								'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' ' . $this->units[$metric],
-								'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' ' . $this->units[$metric]
+								'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' ' . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_own'] * 100, 2) . '%',
+								'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' ' . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_sub'] * 100, 2) . '%'
 							);
 							$output .= '<div class="'.$metric.' profiler-column">'. $progressBar . '</div>';
 
@@ -172,7 +200,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 		$output .= '#profiler .profiler-open { background-image: url(\''.$this->getSkinUrl('aoe_profiler/img/button-open.png').'\'); }'."\n";
 		$output .= '#profiler .profiler-closed { background-image: url(\''.$this->getSkinUrl('aoe_profiler/img/button-closed.png').'\'); }'."\n";
 		foreach ($this->typeIcons as $key => $icon) {
-			$output .= '#profiler .type-'.$key. ' { background-image: url(\''.$this->getSkinUrl('aoe_profiler/img/led-icons/'.$icon).'\'); }'."\n";
+			$output .= '#profiler .type-'.$key. ' { background-image: url(\''.$this->getSkinUrl($icon).'\'); }'."\n";
 		}
 		$output .= '</style>';
 
@@ -260,7 +288,6 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 		$percent1 = round(max(1, $percent1));
 		$offset = round(max(0, $offset));
 
-		// preventing line break in css progress bar if widhs and margins are bigger than 100%
 		$output = '<div class="progress">';
 			$output .= '<div class="progress-bar">';
 				$output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;" title="'.$percent1Label.'"></div>';
@@ -268,6 +295,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 				if ($percent2 > 0) {
 					$percent2 = round(max(1, $percent2));
 					if ($percent1 + $percent2 + $offset > 100) {
+						// preventing line break in css progress bar if widths and margins are bigger than 100%
 						$percent2 = 100 - $percent1 - $offset;
 					}
 					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"  title="'.$percent2Label.'"></div>';

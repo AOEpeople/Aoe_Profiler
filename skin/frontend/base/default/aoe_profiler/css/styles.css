@@ -66,6 +66,11 @@
     color: #8b0000;
 }
 
+#profiler .caption em {
+    font-size: 10px;
+    font-style: italic;
+}
+
 #profiler .profiler-open,
 #profiler .profiler-closed {
     position: absolute;
