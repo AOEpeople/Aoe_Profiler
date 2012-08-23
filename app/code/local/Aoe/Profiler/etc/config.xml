@@ -11,6 +11,11 @@
 			<aoe_profiler>
 				<class>Aoe_Profiler_Model</class>
 			</aoe_profiler>
+			<core>
+				<rewrite>
+					<resource_type_db_pdo_mysql>Aoe_Profiler_Model_Resource_Type_Db_Pdo_Mysql</resource_type_db_pdo_mysql>
+				</rewrite>
+			</core>
 		</models>
 		<helpers>
 			<aoe_profiler>
@@ -27,6 +32,28 @@
                 </rewrite>
             </core>
 		</blocks>
+		<events>
+			<!--<core_block_abstract_to_html_before>
+				<observers>
+					<aoe_profiler>
+						<type>singleton</type>
+						<class>Aoe_Profiler_Model_Observer</class>
+						<method>core_block_abstract_to_html_before</method>
+					</aoe_profiler>
+				</observers>
+			</core_block_abstract_to_html_before>
+
+			<core_block_abstract_to_html_after>
+				<observers>
+					<aoe_profiler>
+						<type>singleton</type>
+						<class>Aoe_Profiler_Model_Observer</class>
+						<method>core_block_abstract_to_html_after</method>
+					</aoe_profiler>
+				</observers>
+			</core_block_abstract_to_html_after>-->
+
+		</events>
 	</global>
 
 	<default>

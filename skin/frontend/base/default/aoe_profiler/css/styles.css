@@ -13,6 +13,16 @@
     line-height: 40px;
     font-weight: normal;
 }
+#profiler .caption {
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    display: block;
+    overflow: hidden;
+    height: 16px;
+}
+#profiler .label > * {
+    vertical-align: bottom;
+}
 #profiler a {
     color: black;
     text-decoration: none;
@@ -61,6 +71,9 @@
     position: absolute;
     left: -11px;
     top: 2px;
+    height: 16px;
+    width: 16px;
+    background-repeat: no-repeat;
 }
 
 #profiler .profiler-closed {
@@ -84,6 +97,7 @@
     float: left;
     position: absolute;
     padding-left: 4px;
+    height: 18px;
 }
 #profiler .profiler-columns {
     float: right;

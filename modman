@@ -1,9 +1,9 @@
-app/etc/modules/*							app/etc/modules/
-app/code/local/Aoe/Profiler		app/code/local/Aoe/Profiler
+app/etc/modules/*						app/etc/modules/
+app/code/local/Aoe/Profiler				app/code/local/Aoe/Profiler
 app/code/local/Varien/Profiler.php		app/code/local/Varien/Profiler.php
+app/code/local/Zend/Db/Profiler.php		app/code/local/Zend/Db/Profiler.php
 
 # frontend
-app/design/frontend/base/default/template/aoe_profiler	app/design/frontend/base/default/template/aoe_profiler
 app/design/frontend/base/default/layout/aoe_profiler		app/design/frontend/base/default/layout/aoe_profiler
 
 skin/frontend/base/default/aoe_profiler		skin/frontend/base/default/aoe_profiler

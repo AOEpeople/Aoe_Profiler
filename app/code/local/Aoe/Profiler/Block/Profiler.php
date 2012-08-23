@@ -10,9 +10,42 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 	protected $stackLog;
 	protected $treeData;
 
-	protected $hideLinesFasterThan = 0;
 	protected $metrics = array('time', 'realmem' /*, 'emalloc' */);
 	protected $units = array('time' => 'ms', 'realmem' => 'MB', 'emalloc' => 'MB');
+
+	protected $typeIcons = array(
+		Varien_Profiler::TYPE_DEFAULT => 'page.png',
+		Varien_Profiler::TYPE_DATABASE => 'database.png',
+		Varien_Profiler::TYPE_TEMPLATE => 'template.png',
+		Varien_Profiler::TYPE_BLOCK => 'brick.png',
+		Varien_Profiler::TYPE_EVENT => 'anchor.png',
+		Varien_Profiler::TYPE_OBSERVER => 'pin.png',
+	);
+
+	/**
+	 * Get type icon
+	 *
+	 * @param $type
+	 * @param $label
+	 * @param $hasChildren
+	 * @return string
+	 */
+	protected function getType($type, $label) {
+		if (empty($type)) {
+			if (substr($label, -1 * strlen('.phtml')) == '.phtml') {
+				$type = Varien_Profiler::TYPE_TEMPLATE;
+			} elseif (strpos($label, 'DISPATCH EVENT:') === 0) {
+				$type = Varien_Profiler::TYPE_EVENT;
+			} elseif (strpos($label, 'OBSERVER:') === 0) {
+				$type = Varien_Profiler::TYPE_OBSERVER;
+			}
+		}
+
+		if (!isset($this->typeIcons[$type])) {
+			$type = Varien_Profiler::TYPE_DEFAULT;
+		}
+		return $type;
+	}
 
 	/**
 	 * Render tree (recursive function)
@@ -29,7 +62,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				$tmp = $this->stackLog[$uniqueId];
 
-				$hasChildren = isset($data[$key . '_children']) && count($data[$key . '_children']) > 0;
+				$hasChildren = isset($data[$key.'_children']) && count($data[$key.'_children']) > 0;
 
 				$output .= '<li class="'.($tmp['level']>1?'collapsed':'').' level-'.$tmp['level'] .' '.($hasChildren ? 'has-children' : '').'">';
 
@@ -38,13 +71,19 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 					$output .= '<div class="label">';
 					if ($hasChildren) {
 						$output .= '<a id="'.$uniqueId.'" href="#'.$uniqueId.'" class="toggle">';
-						$output .= '<div class="profiler-open"><img src="'.$this->getSkinUrl('aoe_profiler/img/button-open.png').'" /></div>';
-						$output .= '<div class="profiler-closed"><img src="'.$this->getSkinUrl('aoe_profiler/img/button-closed.png').'" /></div>';
-						$output .= end($tmp['stack']).'</a>';
+						$output .= '<div class="profiler-open">&nbsp;</div>';
+						$output .= '<div class="profiler-closed">&nbsp;</div>';
 					} else {
-						$output .= '<span>'.end($tmp['stack']).'</span>';
+						$output .= '<span>';
 					}
-					$output .= '</div>';
+
+					$label = end($tmp['stack']);
+					$type = $this->getType($tmp['type'], $label);
+					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />' . htmlspecialchars($label) . '</span>';
+
+					$output .= $hasChildren ? '</a>' : '</span>';
+
+					$output .= '</div>'; // class="label"
 
 					$output .= '<div class="profiler-columns">';
 					foreach ($this->metrics as $metric) {
@@ -62,18 +101,17 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 							);
 							$output .= '<div class="'.$metric.' profiler-column">'. $progressBar . '</div>';
 
-						$output .= '</div>';
+						$output .= '</div>'; // class="metric"
 
 					}
-					$output .= '</div>';
+					$output .= '</div>'; // class="profiler-columns"
 
-				$output .= '</div>';
+				$output .= '</div>'; // class="info"
 
-				if (isset($data[$key . '_children'])) {
-					$output .= '<ul>';
-					$output .= $this->renderTree($data[$key . '_children']);
-					$output .= '</ul>';
+				if ($hasChildren) {
+					$output .= '<ul>' . $this->renderTree($data[$key.'_children']) . '</ul>';
 				}
+
 				$output .= '</li>';
 			}
 		}
@@ -129,11 +167,21 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 		// Adding css. Want to be as obtrusive as possible and not add any file to the header (as bundling might be influenced by this)
 		// That's why I'm embedding css here into the html code...
 		$output = '<style type="text/css">'.Mage::helper('aoe_profiler')->getSkinFileContent('aoe_profiler/css/styles.css').'</style>';
+		// Icons cannot be embedded using relatives path in this situation.
+		$output .= '<style type="text/css">';
+		$output .= '#profiler .profiler-open { background-image: url(\''.$this->getSkinUrl('aoe_profiler/img/button-open.png').'\'); }'."\n";
+		$output .= '#profiler .profiler-closed { background-image: url(\''.$this->getSkinUrl('aoe_profiler/img/button-closed.png').'\'); }'."\n";
+		foreach ($this->typeIcons as $key => $icon) {
+			$output .= '#profiler .type-'.$key. ' { background-image: url(\''.$this->getSkinUrl('aoe_profiler/img/led-icons/'.$icon).'\'); }'."\n";
+		}
+		$output .= '</style>';
+
+
 
 		$output .= '<div id="profiler"><h1>Profiler</h1>';
 
-		if ($this->hideLinesFasterThan) {
-			$output .= '<p>' . $this->__('(Hiding all entries faster than %s ms.)', $this->hideLinesFasterThan) . '</p>';
+		if ($hideLinesFasterThan) {
+			$output .= '<p>' . $this->__('(Hiding all entries faster than %s ms.)', $hideLinesFasterThan) . '</p>';
 		}
 
 		$output .= $this->renderHeader();
@@ -201,29 +249,30 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 	/**
 	 * Render css progress bar
 	 *
-	 * @param $percent
+	 * @param $percent1
 	 * @param int $percent2
 	 * @param int $offset
-	 * @param string $percentLabel
+	 * @param string $percent1Label
 	 * @param string $percent2Label
 	 * @return string
 	 */
-	protected function renderProgressBar($percent, $percent2=0, $offset=0, $percentLabel='', $percent2Label='') {
-		$percent = round(max(1, $percent));
-		$percent2 = round(max(1, $percent2));
+	protected function renderProgressBar($percent1, $percent2=0, $offset=0, $percent1Label='', $percent2Label='') {
+		$percent1 = round(max(1, $percent1));
 		$offset = round(max(0, $offset));
-
-		if ($percent + $percent2 + $offset > 100) {
-			$percent2 = 100 - $percent - $offset;
-		}
 
 		// preventing line break in css progress bar if widhs and margins are bigger than 100%
 		$output = '<div class="progress">';
 			$output .= '<div class="progress-bar">';
-				$output .= '<div class="progress-bar1" style="width: '.$percent.'%; margin-left: '.$offset.'%;" title="'.$percentLabel.'"></div>';
-				if ($percent2) {
+				$output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;" title="'.$percent1Label.'"></div>';
+
+				if ($percent2 > 0) {
+					$percent2 = round(max(1, $percent2));
+					if ($percent1 + $percent2 + $offset > 100) {
+						$percent2 = 100 - $percent1 - $offset;
+					}
 					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"  title="'.$percent2Label.'"></div>';
 				}
+
 				$output .= '</div>';
 		$output .= '</div>';
 		return $output;

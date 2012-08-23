@@ -8,6 +8,15 @@
  */
 class Varien_Profiler {
 
+	const TYPE_DEFAULT = 'default';
+	const TYPE_DEFAULT_NOCHILDREN = 'default-nochildren';
+	const TYPE_DATABASE = 'db';
+	const TYPE_TEMPLATE = 'template';
+	const TYPE_BLOCK = 'block';
+	const TYPE_OBSERVER = 'observer';
+	const TYPE_EVENT = 'event';
+
+
 	static private $startValues = array();
 
 	static private $stackLevel = 0;
@@ -19,6 +28,8 @@ class Varien_Profiler {
 
 	static private $_enabled = false;
 	static private $_checkedEnabled = false;
+
+	static private $_logCallStack = false;
 
 	/**
 	 * Check if profiler is enabled.
@@ -37,15 +48,14 @@ class Varien_Profiler {
 		return self::$_enabled;
 	}
 
-
 	/**
 	 * Pushes to the stack
 	 *
 	 * @param string $name
-	 * @param string $message
+	 * @param string $type
 	 * @return void
 	 */
-	public static function start($name, $message='') {
+	public static function start($name, $type='') {
 		if (!self::isEnabled()) {
 			return;
 		}
@@ -63,22 +73,19 @@ class Varien_Profiler {
 			'time_start' => microtime(true),
 			'realmem_start' => memory_get_usage(true),
 		    'emalloc_start' => memory_get_usage(false),
+			'type' => $type,
 		);
 
-		if ($message) {
-			self::$stackLog[$currentPointer]['messages'] = array($message);
-		}
 	}
 
 	/**
 	 * Pull element from stack
 	 *
 	 * @param string $name
-	 * @param string $message
 	 * @throws Exception
 	 * @return void
 	 */
-	public static function stop($name, $message='') {
+	public static function stop($name) {
 		if (!self::isEnabled()) {
 			return;
 		}
@@ -107,21 +114,37 @@ class Varien_Profiler {
 		}
 
 		$currentPointer = end(self::$currentPointerStack);
+
 		self::$stackLog[$currentPointer]['time_end'] = microtime(true);
 		self::$stackLog[$currentPointer]['realmem_end'] = memory_get_usage(true);
 		self::$stackLog[$currentPointer]['emalloc_end'] = memory_get_usage(false);
 
-		if ($message) {
-			if (!isset(self::$stackLog[$currentPointer]['messages'])) {
-				self::$stackLog[$currentPointer]['messages'] = array($message);
-			} else {
-				self::$stackLog[$currentPointer]['messages'][] = $message;
-			}
+		// TODO: introduce configurable threshold
+		if (self::$_logCallStack !== false) {
+			self::$stackLog[$currentPointer]['callstack'] = Varien_Debug::backtrace(true, false);
 		}
 
 		self::$stackLevel--;
 		array_pop(self::$stack);
 		array_pop(self::$currentPointerStack);
+	}
+
+	/**
+	 * Add data to the current stack
+	 *
+	 * @param $data
+	 * @param null $key
+	 */
+	public static function addData($data, $key=NULL) {
+		$currentPointer = end(self::$currentPointerStack);
+		if (!isset(self::$stackLog[$currentPointer]['messages'])) {
+			self::$stackLog[$currentPointer]['messages'] = array();
+		}
+		if (is_null($key)) {
+			self::$stackLog[$currentPointer]['messages'][] = $data;
+		} else {
+			self::$stackLog[$currentPointer]['messages'][$key] = $data;
+		}
 	}
 
 	/**
@@ -160,7 +183,8 @@ class Varien_Profiler {
 	/**
 	 * Get raw stack log data
 	 *
-	 * @return void
+	 * @return array
+	 * @throws Exception
 	 */
 	public static function getStackLog() {
 		if (self::isEnabled()) {
@@ -169,6 +193,21 @@ class Varien_Profiler {
 		return self::$stackLog;
 	}
 
+	/**
+	 * Set log stack trace
+	 *
+	 * @static
+	 * @param $logStackTrace
+	 */
+	public static function setLogCallStack($logStackTrace) {
+		self::$_logCallStack = $logStackTrace;
+	}
+
+	/**
+	 * Calculate relative data
+	 *
+	 * @return void
+	 */
 	public static function calculate() {
 		foreach (self::$stackLog as &$data) {
 			foreach (array('time', 'realmem', 'emalloc') as $metric) {

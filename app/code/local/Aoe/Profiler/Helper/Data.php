@@ -2,8 +2,8 @@
 
 class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 
-	public function format_time($duration) {
-		return round($duration * 1000, 0);
+	public function format_time($duration, $precision=0) {
+		return round($duration * 1000, $precision);
 	}
 
 	public function format_realmem($bytes) {
