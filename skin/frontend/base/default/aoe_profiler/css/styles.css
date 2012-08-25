@@ -5,6 +5,8 @@
     font-family: Arial;
     font-size: 14px;
     line-height: 14px;
+    text-align: left;
+    position: relative;
 }
 #profiler h1 {
     font-size: 40px;
@@ -95,7 +97,12 @@
     margin-left: 30px;
 }
 #profiler .info { overflow: hidden; }
-#profiler .info:hover { background-color: #FAD69D; }
+#profiler .info:hover {
+    background-color: #FAD69D;
+}
+#profiler .selected .info:hover {
+    background-color: #F7C26D;
+}
 #profiler .label {
     float: left;
     position: absolute;
@@ -165,6 +172,9 @@
 #profiler .hint a {
     text-decoration: underline;
 }
+#profiler .hint-small {
+    font-size: 10px;
+}
 #profiler #duration-filter {
     width: 40px;
     text-align: center;
@@ -173,23 +183,32 @@
     display: none;
 }
 
+#profiler #duration-filter-form button {
+    padding: 0 10px;
+}
+
 #profiler #p-slider {
-    position:relative;
-    cursor:pointer;
-    width: 300px;
-    margin: 10px 0;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid black;
+    padding: 5px;
+    display: inline-block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
 }
 #profiler #p-track {
     position:relative;
     height:4px;
     background-color: #ccc;
+    margin: 6px 0;
 }
 #profiler #p-handle {
-    position:absolute;
-    left:0;
-    top:-6px;
-    width:9px;
-    height:22px;
+    position: absolute;
+    left: -3px;
+    top: -6px;
+    width: 9px;
+    height: 22px;
 }
 #profiler li.selected {
     background-color: #BAFFBA;

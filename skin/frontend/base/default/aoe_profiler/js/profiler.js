@@ -39,6 +39,7 @@ filterTree(initSliderValue);
 var profilerslider = new Control.Slider($('p-handle'), $('p-track'), {
     axis: 'horizontal',
     range: $R(0,1000),
+    alignX: 3,
     sliderValue: initSliderValue,
     onSlide: function(param) {
         $('duration-filter').value = param.round();
@@ -47,7 +48,7 @@ var profilerslider = new Control.Slider($('p-handle'), $('p-track'), {
         filterTree(param)
     }
 });
-$$("#profiler .caption").each(function(element) {
+$$("#profiler .info").each(function(element) {
     element.observe("click", function(event) {
         var liElement = Event.element(event).up("li");
         liElement.toggleClassName("selected");

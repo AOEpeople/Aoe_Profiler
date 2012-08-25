@@ -163,7 +163,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				$output .= '<div id="profiler">
 					<p class="hint">Add <a href="'.$url.'">?profile=1</a> to the url to enable <strong>profiling</strong>.</p>
-					<p class="hint">(This message can be hidden in System > Configuration > Developer > Profiler.)</p>
+					<p class="hint-small">(This message can be hidden in System > Configuration > Developer > Profiler.)</p>
 				</div>';
 
 				return $output;
@@ -198,13 +198,11 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 		$hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
 
-		$output .= 'Hide entries faster than <form id="duration-filter-form"><input type="text" id="duration-filter" value="'.$hideLinesFasterThan.'" /> ms: <button>Hide!</button></form>';
+		$output .= '<div id="p-slider">';
+			$output .= '<div>Hide entries faster than <form id="duration-filter-form"><input type="text" id="duration-filter" value="'.$hideLinesFasterThan.'" /> ms: <button>Hide!</button></form></div>';
+			$output .= '<div id="p-track"><div id="p-handle" class="selected" title="Drag me!"><img src="'.$this->getSkinUrl('aoe_profiler/img/slider.png').'" /></div></div>';
+		$output .= '</div>';
 
-		$output .= '<div id="p-slider">
-		    <div id="p-track">
-		        <div id="p-handle" class="selected"><img src="'.$this->getSkinUrl('aoe_profiler/img/slider.png').'" /></div>
-		    </div>
-		</div>';
 
 		$output .= $this->renderHeader();
 
@@ -281,6 +279,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 	protected function renderProgressBar($percent1, $percent2=0, $offset=0, $percent1Label='', $percent2Label='') {
 		$percent1 = round(max(1, $percent1));
 		$offset = round(max(0, $offset));
+		$offset = round(min(99, $offset));
 
 		$output = '<div class="progress">';
 			$output .= '<div class="progress-bar">';
@@ -291,6 +290,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 					if ($percent1 + $percent2 + $offset > 100) {
 						// preventing line break in css progress bar if widths and margins are bigger than 100%
 						$percent2 = 100 - $percent1 - $offset;
+						$percent2 = max(0, $percent2);
 					}
 					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"  title="'.$percent2Label.'"></div>';
 				}
