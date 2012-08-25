@@ -28,6 +28,7 @@ function filterTree(threshold) {
 $('duration-filter-form').observe('submit', function(event) {
     var value = parseInt($('duration-filter').value);
     filterTree(value);
+    value = Math.sqrt(value * 1000);
     profilerslider.setValue(value);
     event.stop();
 });
@@ -36,16 +37,23 @@ var initSliderValue = parseInt($('duration-filter').value);
 
 filterTree(initSliderValue);
 
+function cubicScale(x) {
+    return 1/1000 * x * x;
+}
+function cubicScaleReverse(y) {
+    return Math.sqrt(y * 1000);
+}
+
 var profilerslider = new Control.Slider($('p-handle'), $('p-track'), {
     axis: 'horizontal',
     range: $R(0,1000),
     alignX: 3,
-    sliderValue: initSliderValue,
+    sliderValue: cubicScaleReverse(initSliderValue),
     onSlide: function(param) {
-        $('duration-filter').value = param.round();
+        $('duration-filter').value = cubicScale(param).round();
     },
     onChange: function(param) {
-        filterTree(param)
+        filterTree(cubicScale(param));
     }
 });
 $$("#profiler .info").each(function(element) {
