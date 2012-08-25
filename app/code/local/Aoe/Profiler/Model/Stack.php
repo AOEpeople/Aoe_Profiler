@@ -7,20 +7,6 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract {
 
 	protected $metrics = array('time', 'realmem' /*, 'emalloc' */);
 
-	protected $hideLinesFasterThan = 0;
-
-
-	/**
-	 * Set hide lines faster than value
-	 *
-	 * @param int $hideLinesFasterThan
-	 * @return Aoe_Profiler_Model_Stack
-	 */
-	public function setHideLinesFasterThan($hideLinesFasterThan) {
-		$this->hideLinesFasterThan = $hideLinesFasterThan;
-		return $this;
-	}
-
 	/**
 	 * @return Aoe_Profiler_Model_Stack
 	 */
@@ -70,25 +56,6 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract {
 		foreach ($arr as $k => $v) {
 
 			if (strpos($k, '_children') === false) {
-
-				// Filter
-				if ($this->stackLog[$v]['time_total'] * 1000 < $this->hideLinesFasterThan) {
-					unset($this->stackLog[$v]);
-					unset($arr[$k]);
-					if (!isset($this->stackLog[$vKey]['hidden_count'])) {
-						$this->stackLog[$vKey]['hidden_count'] = 0;
-					}
-					$this->stackLog[$vKey]['hidden_count']++;
-					/*
-					foreach ($subSum as $key => $value) {
-						if (!isset($this->stackLog[$vKey]['hidden_' . $key])) {
-							$this->stackLog[$vKey]['hidden_' . $key] = 0;
-						}
-						$this->stackLog[$vKey]['hidden_' . $key] += $this->stackLog[$v][$key . '_total'];
-					}
-					*/
-					continue;
-				}
 
 				if (isset($arr[$k . '_children']) && is_array($arr[$k . '_children'])) {
 					$this->updateValues($arr[$k . '_children'], $v);

@@ -86,30 +86,21 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				$hasChildren = isset($data[$key.'_children']) && count($data[$key.'_children']) > 0;
 
-				$output .= '<li class="'.($tmp['level']>1?'collapsed':'').' level-'.$tmp['level'] .' '.($hasChildren ? 'has-children' : '').'">';
+				$duration = round($tmp['time_total'] * 1000);
+				$output .= '<li duration="'.$duration.'" class="'.($tmp['level']>1?'collapsed':'').' level-'.$tmp['level'] .' '.($hasChildren ? 'has-children' : '').'">';
 
 				$output .= '<div class="info">';
 
 					$output .= '<div class="label">';
 					if ($hasChildren) {
-						$output .= '<a id="'.$uniqueId.'" href="#'.$uniqueId.'" class="toggle">';
-						$output .= '<div class="profiler-open">&nbsp;</div>';
-						$output .= '<div class="profiler-closed">&nbsp;</div>';
-					} else {
-						$output .= '<span>';
+						$output .= '<div class="toggle profiler-open">&nbsp;</div>';
+						$output .= '<div class="toggle profiler-closed">&nbsp;</div>';
 					}
 
 					$label = end($tmp['stack']);
 					$type = $this->getType($tmp['type'], $label);
 
-					$hiddenMessage = '';
-					if (isset($tmp['hidden_count'])) {
-						$hiddenMessage = ' <em>('.htmlspecialchars($tmp['hidden_count']).' hidden sub entries)</em>';
-					}
-
-					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />' . htmlspecialchars($label) . $hiddenMessage . '</span>';
-
-					$output .= $hasChildren ? '</a>' : '</span>';
+					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />' . htmlspecialchars($label) . '</span>';
 
 					$output .= '</div>'; // class="label"
 
@@ -180,13 +171,10 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 			return;
 		}
 
-		$hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
-
 		$stackModel = Mage::getModel('aoe_profiler/stack'); /* @var $stackModel Aoe_Profiler_Model_Stack */
 
 		$stackModel
 			->loadStackLogFromProfiler()
-			->setHideLinesFasterThan($hideLinesFasterThan)
 			->processRawData();
 
 		$this->stackLog = $stackModel->getStackLog();
@@ -208,9 +196,15 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 		$output .= '<div id="profiler"><h1>Profiler</h1>';
 
-		if ($hideLinesFasterThan) {
-			$output .= '<p>' . $this->__('(Hiding all entries faster than %s ms.)', $hideLinesFasterThan) . '</p>';
-		}
+		$hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
+
+		$output .= 'Hide entries faster than <form id="duration-filter-form"><input type="text" id="duration-filter" value="'.$hideLinesFasterThan.'" /> ms: <button>Hide!</button></form>';
+
+		$output .= '<div id="p-slider">
+		    <div id="p-track">
+		        <div id="p-handle" class="selected"><img src="'.$this->getSkinUrl('aoe_profiler/img/slider.png').'" /></div>
+		    </div>
+		</div>';
 
 		$output .= $this->renderHeader();
 

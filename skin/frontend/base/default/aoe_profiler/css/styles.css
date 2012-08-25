@@ -19,6 +19,7 @@
     display: block;
     overflow: hidden;
     height: 16px;
+    cursor: pointer;
 }
 #profiler .label > * {
     vertical-align: bottom;
@@ -61,10 +62,6 @@
 #profiler .collapsed > ul {
     display: none;
 }
-#profiler .slow, #profiler .slow a {
-    font-weight: bold;
-    color: #8b0000;
-}
 
 #profiler .caption em {
     font-size: 10px;
@@ -79,6 +76,7 @@
     height: 16px;
     width: 16px;
     background-repeat: no-repeat;
+    cursor: pointer;
 }
 
 #profiler .profiler-closed {
@@ -166,4 +164,37 @@
 
 #profiler .hint a {
     text-decoration: underline;
+}
+#profiler #duration-filter {
+    width: 40px;
+    text-align: center;
+}
+#profiler #treeView li.filtered {
+    display: none;
+}
+
+#profiler #p-slider {
+    position:relative;
+    cursor:pointer;
+    width: 300px;
+    margin: 10px 0;
+}
+#profiler #p-track {
+    position:relative;
+    height:4px;
+    background-color: #ccc;
+}
+#profiler #p-handle {
+    position:absolute;
+    left:0;
+    top:-6px;
+    width:9px;
+    height:22px;
+}
+#profiler li.selected {
+    background-color: #BAFFBA;
+}
+
+#profiler li.selected > .info {
+    font-weight: bold;
 }
