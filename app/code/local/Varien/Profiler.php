@@ -218,4 +218,32 @@ class Varien_Profiler {
 		}
 	}
 
+	/**
+	 * Dummy methods to be fully compatible with the original Varien_Profiler class
+	 */
+
+	public static function resume($timerName) {
+		return self::start($timerName);
+	}
+
+	public static function pause($timerName) {
+		return self::stop($timerName);
+	}
+
+	public static function reset($timerName) {
+		return self::stop($timerName);
+	}
+
+	public static function fetch($timerName, $key='sum') {
+		return false;
+	}
+
+	public static function getTimers() {
+		return array();
+	}
+
+	public static function getSqlProfiler($res) {
+		return '';
+	}
+
 }
