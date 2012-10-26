@@ -3,3 +3,4 @@ app/code/local/Aoe/Profiler				app/code/local/Aoe/Profiler
 app/code/local/Varien/Profiler.php		app/code/local/Varien/Profiler.php
 app/code/local/Zend/Db/Profiler.php		app/code/local/Zend/Db/Profiler.php
 skin/frontend/base/default/aoe_profiler		skin/frontend/base/default/aoe_profiler
+skin/adminhtml/base/default/aoe_profiler	skin/adminhtml/base/default/aoe_profiler
