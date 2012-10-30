@@ -11,6 +11,11 @@
 			<aoe_profiler>
 				<class>Aoe_Profiler_Model</class>
 			</aoe_profiler>
+			<core>
+				<rewrite>
+					<resource_type_db_pdo_mysql>Aoe_Profiler_Model_Resource_Type_Db_Pdo_Mysql</resource_type_db_pdo_mysql>
+				</rewrite>
+			</core>
 		</models>
 		<helpers>
 			<aoe_profiler>
