@@ -35,4 +35,25 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 		return $content;
 	}
 
+	/**
+	 * Renders Magento page with profiler output to file
+	 * Useful when profiling cli scripts
+	 */
+	public function renderProfilerOutputToFile() {
+
+		$layout = Mage::app()->getLayout();
+		$layout->getUpdate()->addHandle(array('default', 'page_one_column'));
+		$layout->getUpdate()->load();
+		$layout->generateXml()->generateBlocks();
+
+		$root = $layout->getBlock('root');
+		$template = "page/1column.phtml";
+		$root->setTemplate($template);
+		$block = $layout->createBlock('core/profiler', 'profiler');
+		/** @var $content Mage_Core_Block_Text_List */
+		$content = $root->getChild('content');
+		$content->append($block, 'profiler_output');
+		$content = $root->toHtml();
+		file_put_contents(Mage::getBaseDir('var') . DS . 'log' . DS . "profile".time().".html", $content);
+	}
 }
