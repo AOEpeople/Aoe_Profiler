@@ -47,7 +47,7 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 		$layout->generateXml()->generateBlocks();
 
 		$root = $layout->getBlock('root');
-		$template = "page/1column.phtml";
+		$template = "page/empty.phtml";
 		$root->setTemplate($template);
 		$block = $layout->createBlock('core/profiler', 'profiler');
 		/** @var $content Mage_Core_Block_Text_List */
