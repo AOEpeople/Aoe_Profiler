@@ -5,7 +5,7 @@
     "description": "Magento Profiler",
     "homepage": "http://www.fabrizio-branca.de/magento-profiler.html",
     "require": {
-        "magento-hackathon/magento-composer-installer": "dev-master"
+        "magento-hackathon/magento-composer-installer": "*"
     },
     "authors":[
         {
