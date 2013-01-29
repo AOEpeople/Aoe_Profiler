@@ -34,6 +34,7 @@
 			<debug>
 				<showDisabledMessage>1</showDisabledMessage>
 				<hideLinesFasterThan>10</hideLinesFasterThan>
+				<logInvalidNesting>1</logInvalidNesting>
 			</debug>
 		</dev>
 	</default>

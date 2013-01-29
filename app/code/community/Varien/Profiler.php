@@ -92,14 +92,18 @@ class Varien_Profiler {
 
 		$currentName = end(self::$stack);
 		if ($currentName != $name) {
-			Mage::log('[INVALID NESTING!] Found: ' .$name . " | Expecting: $currentName");
+		    if (Mage::getStoreConfigFlag('dev/debug/logInvalidNesting')) {
+			    Mage::log('[INVALID NESTING!] Found: ' .$name . " | Expecting: $currentName");
+            }
 
 			if (in_array($name, self::$stack)) {
 				// trying to stop something that has been started before,
 				// but there are other unstopped stack items
 				// -> auto-stop them
 				while (($latestStackItem = end(self::$stack)) != $name) {
-					Mage::log('Auto-stopping timer "' .$latestStackItem . '" because of incorrect nesting');
+				    if (Mage::getStoreConfigFlag('dev/debug/logInvalidNesting')) {
+					   Mage::log('Auto-stopping timer "' .$latestStackItem . '" because of incorrect nesting');
+                    }
 					self::stop($latestStackItem);
 				}
 			} else {
