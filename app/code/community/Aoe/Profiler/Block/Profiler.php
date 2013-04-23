@@ -196,7 +196,21 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 		$output .= '<div id="profiler"><h1>Profiler</h1>';
 
-		$hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
+        $output .= <<<HTML
+            <div id="p-search">
+                <form id="text-filter-form">
+                    <label for="text-filter">Search for:</label>
+                    <input type="text" id="text-filter" value="" placeholder="Text or regular expression"
+                           title="Text or regular expression" />
+                    <br />
+                    <input type="checkbox" id="text-filter-case-sensitivity" value="" />
+                    <label for="text-filter-case-sensitivity">Case insensitive</label>
+                    <button>Search!</button>
+                </form>
+            </div>
+HTML;
+
+        $hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
 
 		$output .= '<div id="p-slider">';
 			$output .= '<div>Hide entries faster than <form id="duration-filter-form"><input type="text" id="duration-filter" value="'.$hideLinesFasterThan.'" /> ms: <button>Hide!</button></form></div>';
