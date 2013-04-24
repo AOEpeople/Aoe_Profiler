@@ -168,7 +168,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				return $output;
 			}
-			return;
+			return '';
 		}
 
 		$stackModel = Mage::getModel('aoe_profiler/stack'); /* @var $stackModel Aoe_Profiler_Model_Stack */
@@ -192,31 +192,37 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 		}
 		$output .= '</style>';
 
-
-
-		$output .= '<div id="profiler"><h1>Profiler</h1>';
+        $hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
 
         $output .= <<<HTML
-            <div id="p-search">
-                <form id="text-filter-form">
-                    <label for="text-filter">Search for:</label>
-                    <input type="text" id="text-filter" value="" placeholder="Text or regular expression"
-                           title="Text or regular expression" />
-                    <br />
-                    <input type="checkbox" id="text-filter-case-sensitivity" value="" />
-                    <label for="text-filter-case-sensitivity">Case insensitive</label>
-                    <button>Search!</button>
+            <div id="profiler"><h1>Profiler</h1>
+            <div id="p-filter">
+                <form id="filter-form">
+                    <div class="form-block">
+                        <label for="text-filter">Search for:</label>
+                        <input type="text" id="text-filter" value="" placeholder="Text or regular expression"
+                               title="Text or regular expression" />
+                        (RegExp is allowed)
+                        <br />
+                        <input type="checkbox" id="text-filter-case-sensitivity" value="" />
+                        <label for="text-filter-case-sensitivity">Case sensitive</label>
+                        <input type="checkbox" id="show-matches-descendants" value="" />
+                        <label for="show-matches-descendants">Do not hide matches' descendants</label>
+                    </div>
+                    <div class="form-block" style="padding-left: 15px">
+                        <div>Hide entries faster than
+                            <input type="text" id="duration-filter" value="{$hideLinesFasterThan}" /> ms:
+                            <button>Filter!</button>
+                        </div>
+                        <div id="p-track">
+                            <div id="p-handle" class="selected" title="Drag me!">
+                                <img src="{$this->getSkinUrl('aoe_profiler/img/slider.png')}" />
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
 HTML;
-
-        $hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
-
-		$output .= '<div id="p-slider">';
-			$output .= '<div>Hide entries faster than <form id="duration-filter-form"><input type="text" id="duration-filter" value="'.$hideLinesFasterThan.'" /> ms: <button>Hide!</button></form></div>';
-			$output .= '<div id="p-track"><div id="p-handle" class="selected" title="Drag me!"><img src="'.$this->getSkinUrl('aoe_profiler/img/slider.png').'" /></div></div>';
-		$output .= '</div>';
-
 
 		$output .= $this->renderHeader();
 
