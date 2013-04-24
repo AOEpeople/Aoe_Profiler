@@ -106,19 +106,24 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 					$output .= '<div class="profiler-columns">';
 					foreach ($this->metrics as $metric) {
+                        $formatterMethod = 'format_'.$metric;
+                        $ownTitle = 'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' '
+                            . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_own'] * 100, 2) . '%';
+                        $subTitle = 'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' '
+                            . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_sub'] * 100, 2) . '%';
+                        $totalTitle = $helper->$formatterMethod($tmp[$metric.'_own'] + $tmp[$metric.'_sub']) . ' '
+                            . $this->units[$metric] . ' / '
+                            . round(($tmp[$metric.'_rel_own'] + $tmp[$metric.'_rel_sub']) * 100, 2) . '%';
+                        $fullTitle = $totalTitle . ' (' . $ownTitle . ', ' . $subTitle . ')';
 
-						$output .= '<div class="metric">';
+                        $output .= '<div class="metric" title="' . $fullTitle . '">';
 
-							$formatterMethod = 'format_'.$metric;
-
-							$progressBar = $this->renderProgressBar(
-								$tmp[$metric.'_rel_own'] * 100,
-								$tmp[$metric.'_rel_sub'] * 100,
-								$tmp[$metric.'_rel_offset'] * 100,
-								'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' ' . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_own'] * 100, 2) . '%',
-								'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' ' . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_sub'] * 100, 2) . '%'
-							);
-							$output .= '<div class="'.$metric.' profiler-column">'. $progressBar . '</div>';
+                        $progressBar = $this->renderProgressBar(
+                            $tmp[$metric . '_rel_own'] * 100,
+                            $tmp[$metric . '_rel_sub'] * 100,
+                            $tmp[$metric . '_rel_offset'] * 100
+                        );
+                        $output .= '<div class="'.$metric.' profiler-column">'. $progressBar . '</div>';
 
 						$output .= '</div>'; // class="metric"
 
@@ -168,7 +173,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				return $output;
 			}
-			return;
+			return '';
 		}
 
 		$stackModel = Mage::getModel('aoe_profiler/stack'); /* @var $stackModel Aoe_Profiler_Model_Stack */
@@ -192,31 +197,37 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 		}
 		$output .= '</style>';
 
-
-
-		$output .= '<div id="profiler"><h1>Profiler</h1>';
+        $hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
 
         $output .= <<<HTML
-            <div id="p-search">
-                <form id="text-filter-form">
-                    <label for="text-filter">Search for:</label>
-                    <input type="text" id="text-filter" value="" placeholder="Text or regular expression"
-                           title="Text or regular expression" />
-                    <br />
-                    <input type="checkbox" id="text-filter-case-sensitivity" value="" />
-                    <label for="text-filter-case-sensitivity">Case insensitive</label>
-                    <button>Search!</button>
+            <div id="profiler"><h1>Profiler</h1>
+            <div id="p-filter">
+                <form id="filter-form">
+                    <div class="form-block">
+                        <label for="text-filter">Search for:</label>
+                        <input type="text" id="text-filter" value="" placeholder="Text or regular expression"
+                               title="Text or regular expression" />
+                        (RegExp is allowed)
+                        <br />
+                        <input type="checkbox" id="text-filter-case-sensitivity" value="" />
+                        <label for="text-filter-case-sensitivity">Case sensitive</label>
+                        <input type="checkbox" id="show-matches-descendants" value="" />
+                        <label for="show-matches-descendants">Do not hide matches' descendants</label>
+                    </div>
+                    <div class="form-block" style="padding-left: 15px">
+                        <div>Hide entries faster than
+                            <input type="text" id="duration-filter" value="{$hideLinesFasterThan}" /> ms:
+                            <button>Filter!</button>
+                        </div>
+                        <div id="p-track">
+                            <div id="p-handle" class="selected" title="Drag me!">
+                                <img src="{$this->getSkinUrl('aoe_profiler/img/slider.png')}" />
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
 HTML;
-
-        $hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
-
-		$output .= '<div id="p-slider">';
-			$output .= '<div>Hide entries faster than <form id="duration-filter-form"><input type="text" id="duration-filter" value="'.$hideLinesFasterThan.'" /> ms: <button>Hide!</button></form></div>';
-			$output .= '<div id="p-track"><div id="p-handle" class="selected" title="Drag me!"><img src="'.$this->getSkinUrl('aoe_profiler/img/slider.png').'" /></div></div>';
-		$output .= '</div>';
-
 
 		$output .= $this->renderHeader();
 
@@ -286,18 +297,16 @@ HTML;
 	 * @param $percent1
 	 * @param int $percent2
 	 * @param int $offset
-	 * @param string $percent1Label
-	 * @param string $percent2Label
 	 * @return string
 	 */
-	protected function renderProgressBar($percent1, $percent2=0, $offset=0, $percent1Label='', $percent2Label='') {
+	protected function renderProgressBar($percent1, $percent2=0, $offset=0) {
 		$percent1 = round(max(1, $percent1));
 		$offset = round(max(0, $offset));
 		$offset = round(min(99, $offset));
 
 		$output = '<div class="progress">';
 			$output .= '<div class="progress-bar">';
-				$output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;" title="'.$percent1Label.'"></div>';
+				$output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;"></div>';
 
 				if ($percent2 > 0) {
 					$percent2 = round(max(1, $percent2));
@@ -306,7 +315,7 @@ HTML;
 						$percent2 = 100 - $percent1 - $offset;
 						$percent2 = max(0, $percent2);
 					}
-					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"  title="'.$percent2Label.'"></div>';
+					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"></div>';
 				}
 
 				$output .= '</div>';

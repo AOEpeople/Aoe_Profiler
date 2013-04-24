@@ -179,22 +179,19 @@
     width: 40px;
     text-align: center;
 }
-#profiler #treeView li.filtered-by-duration {
+#profiler #treeView li.filtered {
     display: none;
 }
-#profiler #treeView li.filtered-by-text {
-    display: none;
-}
-
-#profiler #duration-filter-form button {
+#profiler #filter-form button {
     padding: 0 10px;
 }
-
+#profiler #filter-form .form-block {
+    display: table-cell;
+}
 #profiler font {
     background-color: yellow;
 }
-
-#profiler #p-slider {
+#profiler #p-filter {
     cursor: pointer;
     border: 1px solid black;
     padding: 5px;
@@ -202,14 +199,6 @@
     position: absolute;
     top: 20px;
     right: 20px;
-}
-#profiler #p-search {
-    border: 1px solid black;
-    padding: 5px;
-    display: inline-block;
-    position: absolute;
-    top: 20px;
-    right: 320px;
 }
 #profiler #p-track {
     position:relative;
