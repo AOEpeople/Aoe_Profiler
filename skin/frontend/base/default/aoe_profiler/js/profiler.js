@@ -25,7 +25,7 @@ function traverseTreeInDepth(ul, liCallback, divCallback)
             elementChildren.each(function(elementChild) {
                 if (elementChild.match('ul')) {
                     traverseTreeInDepth(elementChild, liCallback, divCallback);
-                } else if (elementChild.match('div')) {
+                } else if (elementChild.match('div') && typeof divCallback === 'function') {
                     divCallback(elementChild, element);
                 }
             });
@@ -36,17 +36,36 @@ function traverseTreeInDepth(ul, liCallback, divCallback)
 function filterTree(threshold, text, isCaseSensitive, showMatchesDescendants) {
     var re = new RegExp(text, 'mg' + (isCaseSensitive ? '' : 'i'));
 
-    $$('#treeView li').each(function(element) {
-        element.writeAttribute('matched', false);
-    });
-
-    if (text == '') {
-        // apply duration filter only to list items
+    if (text == '' || text != currentText || isCaseSensitive != currentIsCaseSensitive) {
         $$('#treeView li').each(function(element) {
-            if (parseInt(element.readAttribute('duration')) < threshold) {
-                element.addClassName('filtered');
+            element.writeAttribute('matched', false);
+        });
+    }
+
+    if (text == '' && threshold != currentThreshold) {
+        // apply only duration filter to list items
+        $$('#treeView li').each(function(li) {
+            if (parseInt(li.readAttribute('duration')) < threshold) {
+                li.addClassName('filtered');
             } else {
-                element.removeClassName('filtered');
+                li.removeClassName('filtered');
+            }
+        });
+    } else if (text == currentText && isCaseSensitive == currentIsCaseSensitive && threshold != currentThreshold) {
+        // apply duration filter to matched list items
+        $$('#treeView li[matched]').each(function(li) {
+            if (parseInt(li.readAttribute('duration')) < threshold) {
+                li.addClassName('filtered');
+            } else {
+                li.removeClassName('filtered');
+            }
+        });
+
+        traverseTreeInDepth($('treeView'), function(li) {
+            // hide rows which don't match and with all hidden children
+            if (!li.readAttribute('matched')
+                && li.select('li').length > 0 && li.select('li:not(.filtered)').length == 0) {
+                li.addClassName('filtered');
             }
         });
     } else {
@@ -81,14 +100,18 @@ function filterTree(threshold, text, isCaseSensitive, showMatchesDescendants) {
         });
 
         if (showMatchesDescendants) {
-            $$('#treeView li[matched]:not(.filtered)').each(function(element) {
-                element.select('li').each(function (descendant) {
-                    descendant.removeClassName('filtered');
+            $$('#treeView li[matched]:not(.filtered)').each(function(li) {
+                li.select('li').each(function (descendantLi) {
+                    descendantLi.removeClassName('filtered');
                 });
             });
-            //TODO: implement
         }
     }
+
+    currentThreshold              = threshold;
+    currentText                   = text;
+    currentIsCaseSensitive        = isCaseSensitive;
+    currentShowMatchesDescendants = showMatchesDescendants;
 }
 $('filter-form').observe('submit', function (event) {
     var threshold              = parseInt($('duration-filter').value);
@@ -103,10 +126,12 @@ $('filter-form').observe('submit', function (event) {
     event.stop();
 });
 
-var initSliderValue = parseInt($('duration-filter').value);
-var initText = $('text-filter').value;
+var currentThreshold              = undefined;
+var currentText                   = undefined;
+var currentIsCaseSensitive        = undefined;
+var currentShowMatchesDescendants = undefined;
 
-filterTree(initSliderValue, initText, false, false);
+filterTree(parseInt($('duration-filter').value), $('text-filter').value, false, false);
 
 function cubicScale(x) {
     return 1/1000 * x * x;
@@ -119,7 +144,7 @@ var profilerslider = new Control.Slider($('p-handle'), $('p-track'), {
     axis: 'horizontal',
     range: $R(0,1000),
     alignX: 3,
-    sliderValue: cubicScaleReverse(initSliderValue),
+    sliderValue: cubicScaleReverse(currentThreshold),
     onSlide: function(param) {
         $('duration-filter').value = cubicScale(param).round();
     },
