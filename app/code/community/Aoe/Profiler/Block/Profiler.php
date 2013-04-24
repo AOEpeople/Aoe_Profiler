@@ -106,19 +106,24 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 					$output .= '<div class="profiler-columns">';
 					foreach ($this->metrics as $metric) {
+                        $formatterMethod = 'format_'.$metric;
+                        $ownTitle = 'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' '
+                            . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_own'] * 100, 2) . '%';
+                        $subTitle = 'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' '
+                            . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_sub'] * 100, 2) . '%';
+                        $totalTitle = $helper->$formatterMethod($tmp[$metric.'_own'] + $tmp[$metric.'_sub']) . ' '
+                            . $this->units[$metric] . ' / '
+                            . round(($tmp[$metric.'_rel_own'] + $tmp[$metric.'_rel_sub']) * 100, 2) . '%';
+                        $fullTitle = $totalTitle . ' (' . $ownTitle . ', ' . $subTitle . ')';
 
-						$output .= '<div class="metric">';
+                        $output .= '<div class="metric" title="' . $fullTitle . '">';
 
-							$formatterMethod = 'format_'.$metric;
-
-							$progressBar = $this->renderProgressBar(
-								$tmp[$metric.'_rel_own'] * 100,
-								$tmp[$metric.'_rel_sub'] * 100,
-								$tmp[$metric.'_rel_offset'] * 100,
-								'Own: ' . $helper->$formatterMethod($tmp[$metric.'_own']) . ' ' . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_own'] * 100, 2) . '%',
-								'Sub: ' . $helper->$formatterMethod($tmp[$metric.'_sub']) . ' ' . $this->units[$metric] . ' / ' . round($tmp[$metric.'_rel_sub'] * 100, 2) . '%'
-							);
-							$output .= '<div class="'.$metric.' profiler-column">'. $progressBar . '</div>';
+                        $progressBar = $this->renderProgressBar(
+                            $tmp[$metric . '_rel_own'] * 100,
+                            $tmp[$metric . '_rel_sub'] * 100,
+                            $tmp[$metric . '_rel_offset'] * 100
+                        );
+                        $output .= '<div class="'.$metric.' profiler-column">'. $progressBar . '</div>';
 
 						$output .= '</div>'; // class="metric"
 
@@ -292,18 +297,16 @@ HTML;
 	 * @param $percent1
 	 * @param int $percent2
 	 * @param int $offset
-	 * @param string $percent1Label
-	 * @param string $percent2Label
 	 * @return string
 	 */
-	protected function renderProgressBar($percent1, $percent2=0, $offset=0, $percent1Label='', $percent2Label='') {
+	protected function renderProgressBar($percent1, $percent2=0, $offset=0) {
 		$percent1 = round(max(1, $percent1));
 		$offset = round(max(0, $offset));
 		$offset = round(min(99, $offset));
 
 		$output = '<div class="progress">';
 			$output .= '<div class="progress-bar">';
-				$output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;" title="'.$percent1Label.'"></div>';
+				$output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;"></div>';
 
 				if ($percent2 > 0) {
 					$percent2 = round(max(1, $percent2));
@@ -312,7 +315,7 @@ HTML;
 						$percent2 = 100 - $percent1 - $offset;
 						$percent2 = max(0, $percent2);
 					}
-					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"  title="'.$percent2Label.'"></div>';
+					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"></div>';
 				}
 
 				$output .= '</div>';
