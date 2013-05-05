@@ -15,6 +15,7 @@ class Varien_Profiler {
 	const TYPE_BLOCK = 'block';
 	const TYPE_OBSERVER = 'observer';
 	const TYPE_EVENT = 'event';
+	const TYPE_MODEL = 'model';
 
 
 	static private $startValues = array();
@@ -76,6 +77,182 @@ class Varien_Profiler {
 			'type' => $type,
 		);
 
+		if ($name == '__EAV_LOAD_MODEL__') {
+			$trace = debug_backtrace();
+			$className = get_class($trace[1]['args'][0]);
+			$entityId = $trace[1]['args'][1];
+			$attributes = $trace[1]['args'][2];
+			self::$stackLog[$currentPointer]['detail'] = "$className, id: $entityId, attributes: " . var_export($attributes, true);
+		}
+
+		if (isset($_GET['links']) && $_GET['links'] == true) {
+			$trace = isset($trace) ? $trace : debug_backtrace();
+			$fileAndLine = self::getFileAndLine($trace, $type, $name);
+			self::$stackLog[$currentPointer]['file'] = $fileAndLine['file'];
+			self::$stackLog[$currentPointer]['line'] = $fileAndLine['line'];
+		}
+
+	}
+
+	/**
+	 * Get file and line for the current bucket and try to be smart about it.
+	 * In some case it is not very helpful to jump to the line where Varien_Profiler::start() is called,
+	 * because this could be a generic call. Instead jumping to the line where the actual action is happing.
+	 *
+	 * @param array $trace
+	 * @param $type
+	 * @param $name
+	 * @return array|bool
+	 */
+	public static function getFileAndLine(array $trace, $type, $name) {
+
+		$fileAndLine = false;
+
+		switch (self::getType($type, $name)) {
+
+			/**
+			 * If we have an "event" let's jump to where the event is dispatched
+			 */
+			case Varien_Profiler::TYPE_EVENT:
+				$fileAndLine = array(
+					'file' => $trace[1]['file'],
+					'line' => $trace[1]['line'],
+				);
+				break;
+
+			/**
+			 * In case of a template let's jump to the template file
+			 */
+			case Varien_Profiler::TYPE_TEMPLATE:
+				$fileAndLine = array(
+					'file' => Mage::getBaseDir('design') . DS . $name,
+					'line' => 0,
+				);
+				break;
+
+			/**
+			 * For blocks let's jump the the block class
+			 */
+			case Varien_Profiler::TYPE_BLOCK:
+				$node = $trace[1]['args'][0]; /* @var $node Varien_Simplexml_Element */
+				if (!empty($node['class'])) {
+					$className = (string)$node['class'];
+				} else {
+					$className = (string)$node['type'];
+				}
+				$className = Mage::getConfig()->getBlockClassName($className);
+				$fileAndLine = array(
+					'file' => mageFindClassFile($className),
+					'line' => 0,
+				);
+				break;
+
+			/**
+			 * For models let's extract the class name and jump to this file instead
+			 */
+			case Varien_Profiler::TYPE_MODEL:
+				$className = substr($name, 24);
+				$fileAndLine = array(
+					'file' => mageFindClassFile($className),
+					'line' => 0,
+				);
+				break;
+
+			/**
+			 * Ok, this is ugly and very slow, but it's so handy... :)
+			 * In case of an observer let's find out the class and method that will be executed, find the file and jump
+			 * to this method.
+			 */
+			case Varien_Profiler::TYPE_OBSERVER:
+				$observerName = substr($name, 10);
+				$eventName = substr(self::$stack[count(self::$stack)-2], 15);
+
+				foreach (array(Mage::getDesign()->getArea(), 'global') as $area) {
+					$eventConfig = Mage::app()->getConfig()->getEventConfig($area, $eventName);
+
+					if ($eventConfig) {
+						$observers = array();
+						foreach ($eventConfig->observers->children() as $obsName=>$obsConfig) {
+							$observers[$obsName] = array(
+								'type'  => (string)$obsConfig->type,
+								'model' => $obsConfig->class ? (string)$obsConfig->class : $obsConfig->getClassName(),
+								'method'=> (string)$obsConfig->method,
+							);
+						}
+
+						if (isset($observers[$observerName])) {
+							$model = $observers[$observerName]['model'];
+							$method = $observers[$observerName]['method'];
+							$className = Mage::getConfig()->getModelClassName($model);
+							$file = mageFindClassFile($className);
+							$line = self::getLineNumber($file, '/function.*'.$method.'/');
+							$fileAndLine = array(
+								'file' => $file,
+								'line' => $line,
+							);
+							break;
+						}
+					}
+				}
+				if ($fileAndLine) {
+					break;
+				}
+			default:
+				$fileAndLine = array(
+					'file' => $trace[0]['file'],
+					'line' => $trace[0]['line'],
+				);
+		}
+		return $fileAndLine;
+	}
+
+	/**
+	 * Get the line number of the first line in a file matching a given regex
+	 * Not the nicest solution, but probably the fastest
+	 *
+	 * @param $file
+	 * @param $regex
+	 * @return bool|int
+	 */
+	public static function getLineNumber($file, $regex) {
+		$i = 0;
+		$lineFound = false;
+		$handle = @fopen($file, 'r');
+		if ($handle) {
+			while (($buffer = fgets($handle, 4096)) !== false) {
+				$i++;
+				if (preg_match($regex, $buffer)) {
+					$lineFound = true;
+					break;
+				}
+		    }
+		    fclose($handle);
+		}
+		return $lineFound ? $i : false;
+	}
+
+	/**
+	 * Get type
+	 *
+	 * @param $type
+	 * @param $label
+	 * @return string
+	 */
+	public static function getType($type, $label) {
+		if (empty($type)) {
+			if (substr($label, -1 * strlen('.phtml')) == '.phtml') {
+				$type = Varien_Profiler::TYPE_TEMPLATE;
+			} elseif (strpos($label, 'DISPATCH EVENT:') === 0) {
+				$type = Varien_Profiler::TYPE_EVENT;
+			} elseif (strpos($label, 'OBSERVER:') === 0) {
+				$type = Varien_Profiler::TYPE_OBSERVER;
+			} elseif (strpos($label, 'BLOCK:') === 0) {
+				$type = Varien_Profiler::TYPE_BLOCK;
+			} elseif (strpos($label, 'CORE::create_object_of::') === 0) {
+				$type = Varien_Profiler::TYPE_MODEL;
+			}
+		}
+		return $type;
 	}
 
 	/**

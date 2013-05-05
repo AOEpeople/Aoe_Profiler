@@ -51,17 +51,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 	 * @return string
 	 */
 	protected function getType($type, $label) {
-		if (empty($type)) {
-			if (substr($label, -1 * strlen('.phtml')) == '.phtml') {
-				$type = Varien_Profiler::TYPE_TEMPLATE;
-			} elseif (strpos($label, 'DISPATCH EVENT:') === 0) {
-				$type = Varien_Profiler::TYPE_EVENT;
-			} elseif (strpos($label, 'OBSERVER:') === 0) {
-				$type = Varien_Profiler::TYPE_OBSERVER;
-			} elseif (strpos($label, 'BLOCK:') === 0) {
-				$type = Varien_Profiler::TYPE_BLOCK;
-			}
-		}
+		$type = Varien_Profiler::getType($type, $label);
 
 		if (!isset($this->typeIcons[$type])) {
 			$type = Varien_Profiler::TYPE_DEFAULT;
@@ -98,9 +88,26 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 					}
 
 					$label = end($tmp['stack']);
+
+					if (isset($tmp['detail'])) {
+						$label .= ' ('.htmlspecialchars($tmp['detail']).')';
+					}
+
 					$type = $this->getType($tmp['type'], $label);
 
-					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />' . htmlspecialchars($label) . '</span>';
+
+					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />';
+
+					if (isset($tmp['file'])) {
+						$remoteCallUrlTemplate = 'http://localhost:8091/?message=%s:%s';
+						$linkTemplate = '<a href="%s" onclick="var ajax = new XMLHttpRequest(); ajax.open(\'GET\', this.href); ajax.send(null); return false">%s</a>';
+						$url = sprintf($remoteCallUrlTemplate, $tmp['file'], intval($tmp['line']));
+						$output .= sprintf($linkTemplate, $url, htmlspecialchars($label));
+					} else {
+						$output .= htmlspecialchars($label);
+					}
+
+					$output .= '</span>';
 
 					$output .= '</div>'; // class="label"
 
