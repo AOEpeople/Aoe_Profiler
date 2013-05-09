@@ -16,6 +16,7 @@ class Varien_Profiler {
 	const TYPE_OBSERVER = 'observer';
 	const TYPE_EVENT = 'event';
 	const TYPE_MODEL = 'model';
+	const TYPE_EAVMODEL = 'eavmodel';
 
 
 	static private $startValues = array();
@@ -158,6 +159,13 @@ class Varien_Profiler {
 				);
 				break;
 
+			case Varien_Profiler::TYPE_EAVMODEL:
+				$fileAndLine = array(
+					'file' => $trace[3]['file'],
+					'line' => $trace[3]['line'],
+				);
+				break;
+
 			/**
 			 * Ok, this is ugly and very slow, but it's so handy... :)
 			 * In case of an observer let's find out the class and method that will be executed, find the file and jump
@@ -250,6 +258,8 @@ class Varien_Profiler {
 				$type = Varien_Profiler::TYPE_BLOCK;
 			} elseif (strpos($label, 'CORE::create_object_of::') === 0) {
 				$type = Varien_Profiler::TYPE_MODEL;
+			} elseif (strpos($label, '__EAV_LOAD_MODEL__') === 0) {
+				$type = Varien_Profiler::TYPE_EAVMODEL;
 			}
 		}
 		return $type;
