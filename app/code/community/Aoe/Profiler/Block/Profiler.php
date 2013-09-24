@@ -144,9 +144,12 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 	 */
 	protected function _toHtml() {
 
-		if (!$this->_beforeToHtml()
-			|| !Mage::getStoreConfig('dev/debug/profiler')
-			|| !Mage::helper('core')->isDevAllowed()) {
+		if ( ! Mage::registry('force_profiler_output')
+			&& (!$this->_beforeToHtml()
+				|| !Mage::getStoreConfig('dev/debug/profiler')
+				|| !Mage::helper('core')->isDevAllowed()
+			)
+		) {
 			return '';
 		}
 
@@ -168,7 +171,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				return $output;
 			}
-			return;
+			return '';
 		}
 
 		$stackModel = Mage::getModel('aoe_profiler/stack'); /* @var $stackModel Aoe_Profiler_Model_Stack */

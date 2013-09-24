@@ -38,9 +38,11 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 	/**
 	 * Renders Magento page with profiler output to file
 	 * Useful when profiling cli scripts
+     *
+     * @return string The filename where the profile data was stored.
 	 */
 	public function renderProfilerOutputToFile() {
-
+		Mage::register('force_profiler_output', TRUE);
 		$layout = Mage::app()->getLayout();
 		$layout->getUpdate()->addHandle(array('default', 'page_one_column'));
 		$layout->getUpdate()->load();
@@ -54,6 +56,12 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 		$content = $root->getChild('content');
 		$content->append($block, 'profiler_output');
 		$content = $root->toHtml();
-		file_put_contents(Mage::getBaseDir('var') . DS . 'log' . DS . "profile".time().".html", $content);
+		$profileDir = Mage::getBaseDir('var') . DS . 'profile';
+		if ( ! is_dir($profileDir)) {
+			@mkdir($profileDir, 0777);
+		}
+		$fileName = $profileDir . DS . time().'.html';
+		@file_put_contents($fileName, $content);
+		return $fileName;
 	}
 }
