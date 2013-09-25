@@ -144,13 +144,16 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 	 */
 	protected function _toHtml() {
 
-		if (!$this->_beforeToHtml()
-			|| !Mage::getStoreConfig('dev/debug/profiler')
-			|| !Mage::helper('core')->isDevAllowed()) {
+		if ( ! $this->getForceRender()
+			&& (!$this->_beforeToHtml()
+				|| !Mage::getStoreConfig('dev/debug/profiler')
+				|| !Mage::helper('core')->isDevAllowed()
+			)
+		) {
 			return '';
 		}
 
-		if (!Varien_Profiler::isEnabled()) {
+		if (!Varien_Profiler::isEnabled() && ! $this->getForceRender()) {
 			if (Mage::getStoreConfig('dev/debug/showDisabledMessage')) {
 
 				// Adding css. Want to be as obtrusive as possible and not add any file to the header (as bundling might be influenced by this)
@@ -168,7 +171,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				return $output;
 			}
-			return;
+			return '';
 		}
 
 		$stackModel = Mage::getModel('aoe_profiler/stack'); /* @var $stackModel Aoe_Profiler_Model_Stack */
@@ -194,7 +197,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 
 
-		$output .= '<div id="profiler"><h1>Profiler</h1>';
+		$output .= '<div id="profiler"><h1>'.($this->getTitle() ?:'Profiler').'</h1>';
 
 		$hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
 
