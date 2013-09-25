@@ -42,7 +42,7 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 	 * Useful when profiling cli scripts
 	 *
 	 * @param string $title
-	 * @return string The filename where the profile data was stored.
+	 * @return string|bool The filename where the profile data was stored or false if there was an error.
 	 */
 	public function renderProfilerOutputToFile($title = 'Aoe_Profiler') {
 		// Disable further profiling
@@ -68,12 +68,19 @@ class Aoe_Profiler_Helper_Data extends Mage_Core_Helper_Abstract {
 		// Save HTML to file
 		$profileDir = Mage::getStoreConfig(self::XML_PATH_PROFILE_DIR,0) ?: Mage::getBaseDir('var') . DS . 'profile';
 		if ( ! is_dir($profileDir)) {
-			@mkdir($profileDir, 0777);
+			if ( ! @mkdir($profileDir, 0777)) {
+				Mage::log("Aoe_Profiler could not mkdir: $profileDir");
+				return FALSE;
+			}
 		}
 		list($ms,$time) = explode(' ',microtime());
 		list(,$ms) = explode('.',$ms);
 		$fileName = $profileDir . DS . "$time-$ms.html";
-		@file_put_contents($fileName, $content);
+		if ( ! @file_put_contents($fileName, $content)) {
+			Mage::log("Aoe_Profiler could not write profiler file: $fileName");
+			return FALSE;
+		}
 		return $fileName;
 	}
+
 }
