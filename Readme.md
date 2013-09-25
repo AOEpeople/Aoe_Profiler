@@ -46,9 +46,9 @@ After `Mage::run(...)` add:
 if ($_slowRequestTime) {
     $_elapsed = microtime(true) - $_start;
     if ($_elapsed > $_slowRequestTime) {
-        $_profileName = Mage::helper('aoe_profiler')->renderProfilerOutputToFile();
-        // Log, email, etc..
         $_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'unknown';
+        $_profileName = Mage::helper('aoe_profiler')->renderProfilerOutputToFile($_uri);
+        // Log, email, etc..
         Mage::log("Request for $_uri took $_elapsed seconds. See profiler output in $_profileName", Zend_Log::INFO, 'slow_requests.log');
     }
 }

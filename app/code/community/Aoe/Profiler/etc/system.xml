@@ -41,6 +41,13 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
 						</logInvalidNesting>
+						<profileDir translate="label">
+							<label>Profile Storage Dir</label>
+							<comment><![CDATA[Leave blank to use var/profile. May specify any absolute path.]]></comment>
+							<frontend_type>text</frontend_type>
+							<sort_order>130</sort_order>
+							<show_in_default>1</show_in_default>
+						</profileDir>
 					</fields>
 				</debug>
 			</groups>
