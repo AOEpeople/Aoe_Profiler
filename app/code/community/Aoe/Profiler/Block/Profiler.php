@@ -196,6 +196,10 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 		$output .= '<div id="profiler"><h1>Profiler</h1>';
 
+		if (Mage::getSingleton('core/resource')->getConnection('core_read')->getProfiler()->getEnabled()) {
+			$output .= '<p>Number of database queries: '. Mage::getSingleton('core/resource')->getConnection('core_read')->getProfiler()->getTotalNumQueries() . '</p>';
+		}
+
 		$hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
 
 		$output .= '<div id="p-slider">';
