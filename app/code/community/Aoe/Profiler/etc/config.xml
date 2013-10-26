@@ -35,6 +35,7 @@
 				<showDisabledMessage>1</showDisabledMessage>
 				<hideLinesFasterThan>10</hideLinesFasterThan>
 				<logInvalidNesting>1</logInvalidNesting>
+                <remoteCallUrlTemplate><![CDATA[http://localhost:8091/?message=%s:%s]]></remoteCallUrlTemplate>
 			</debug>
 		</dev>
 	</default>

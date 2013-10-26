@@ -99,7 +99,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 					$output .= '<span class="caption type-'.$type.'" title="'.htmlspecialchars($label).'" />';
 
 					if (isset($tmp['file'])) {
-						$remoteCallUrlTemplate = 'http://localhost:8091/?message=%s:%s';
+                        $remoteCallUrlTemplate = Mage::getStoreConfig('dev/debug/remoteCallUrlTemplate');
 						$linkTemplate = '<a href="%s" onclick="var ajax = new XMLHttpRequest(); ajax.open(\'GET\', this.href); ajax.send(null); return false">%s</a>';
 						$url = sprintf($remoteCallUrlTemplate, $tmp['file'], intval($tmp['line']));
 						$output .= sprintf($linkTemplate, $url, htmlspecialchars($label));
