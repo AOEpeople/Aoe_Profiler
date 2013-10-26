@@ -171,10 +171,13 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				$url = Mage::helper('core/url')->getCurrentUrl();
 				$url .= (strpos($url, '?') === false) ? '?' : '&';
-				$url .= 'profile=1#profiler';
+				$url .= 'profile=1';
+
+                $remoteCallUrl = $url . '&links=1';
 
 				$output .= '<div id="profiler">
-					<p class="hint">Add <a href="'.$url.'">?profile=1</a> to the url to enable <strong>profiling</strong>.</p>
+					<p class="hint">Add <a href="'.$url.'#profiler">?profile=1</a> to the url to enable <strong>profiling</strong>.</p>
+					<p class="hint">If you\'re using PHPStorm and have the RemoteCall plugin installed append <a href="'.$remoteCallUrl.'#profiler">?profile=1&links=1</a> to the url to enable <strong>profiling including links to PHPStorm</strong> (this might be a slower).</p>
 					<p class="hint-small">(This message can be hidden in System > Configuration > Developer > Profiler.)</p>
 				</div>';
 
