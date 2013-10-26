@@ -91,7 +91,7 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
 				$output .= '<div class="info">';
 
-					$output .= '<div class="label">';
+					$output .= '<div class="profiler-label">';
 					if ($hasChildren) {
 						$output .= '<div class="toggle profiler-open">&nbsp;</div>';
 						$output .= '<div class="toggle profiler-closed">&nbsp;</div>';
@@ -270,7 +270,7 @@ HTML;
 		$captions .= '<ul>
 			<li class="captions captions-line">
 				<div class="info">
-					<div class="label">'.$this->__('Name').'
+					<div class="profiler-label">'.$this->__('Name').'
 						<a id="expand-all" href="#">['.$this->__('expand all').']</a>
 						<a id="collapse-all" href="#">['.$this->__('collapse all').']</a>
 					</div>';
