@@ -2,7 +2,7 @@
     background-color: white;
     padding: 10px 20px 50px 20px;
     color: black;
-    font-family: Arial;
+    font-family: Arial, Helvetica, sans-serif !important;
     font-size: 14px;
     line-height: 14px;
     text-align: left;
@@ -23,7 +23,7 @@
     height: 16px;
     cursor: pointer;
 }
-#profiler .label > * {
+#profiler .profiler-label > * {
     vertical-align: bottom;
 }
 #profiler a {
@@ -103,7 +103,7 @@
 #profiler .selected .info:hover {
     background-color: #F7C26D;
 }
-#profiler .label {
+#profiler .profiler-label {
     float: left;
     position: absolute;
     padding-left: 4px;
@@ -121,7 +121,7 @@
 }
 
 
-#profiler #treeView .label {
+#profiler #treeView .profiler-label {
     margin-top: 4px;
 }
 
@@ -184,6 +184,11 @@
 }
 #profiler #filter-form button {
     padding: 0 10px;
+}
+#profiler input {
+    width: auto;
+    margin: auto;
+    padding: auto;
 }
 #profiler #filter-form .form-block {
     display: table-cell;
