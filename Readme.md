@@ -6,7 +6,9 @@ http://www.fabrizio-branca.de/magento-profiler.html
 ## Usage
 
 Enable profiler in System > Configuration > Developer > Debug > Profiler.
-Then trigger profiling can be done by appending ?profile=1 to the url.
+
+* Trigger profiling by appending `?profile=1` to the url.
+* If you're using PHPStorm and have the RemoteCall plugin installed append `?profile=1&links=1` to the url to enable profiling including links to PHPStorm (this might be a slower).
 
 ## Profile cli scripts
 
