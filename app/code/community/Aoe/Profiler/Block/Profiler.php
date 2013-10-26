@@ -239,9 +239,13 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
             </div>
 HTML;
 
-		$output .= $this->renderHeader();
+        if (Mage::getSingleton('core/resource')->getConnection('core_read')->getProfiler()->getEnabled()) {
+            $output .= '<p>Number of database queries: '. Mage::getSingleton('core/resource')->getConnection('core_read')->getProfiler()->getTotalNumQueries() . '</p>';
+        }
 
-		$output .= '<ul id="treeView" class="treeView">';
+        $output .= $this->renderHeader();
+
+        $output .= '<ul id="treeView" class="treeView">';
 			$output .= $this->renderTree($this->treeData);
 		$output .= '</ul>';
 

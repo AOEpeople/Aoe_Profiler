@@ -24,3 +24,19 @@ Varien_Profiler::stop("wrapper");
 Mage::helper('aoe_profiler')->renderProfilerOutputToFile();
 ```
 You will find html page with rendered profiler output in var/log/profile<date>.html
+
+## Enable database profiling
+
+Add this to your local.xml:
+
+    <config>
+        <global>
+            <resources>
+                <default_setup>
+                    <connection>
+                        <profiler>1</profiler>
+                    </connection>
+                </default_setup>
+            </resources>
+        </global>
+    </config>
