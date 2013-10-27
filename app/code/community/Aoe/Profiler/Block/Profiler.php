@@ -4,6 +4,11 @@
  * Profiler output block
  *
  * @author Fabrizio Branca
+ *
+ * @method setTitle()
+ * @method getTitle()
+ * @method setForceRender()
+ * @method getForceRender()
  */
 class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
@@ -156,13 +161,16 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 	 */
 	protected function _toHtml() {
 
-		if (!$this->_beforeToHtml()
-			|| !Mage::getStoreConfig('dev/debug/profiler')
-			|| !Mage::helper('core')->isDevAllowed()) {
+		if ( ! $this->getForceRender()
+			&& (!$this->_beforeToHtml()
+				|| !Mage::getStoreConfig('dev/debug/profiler')
+				|| !Mage::helper('core')->isDevAllowed()
+			)
+		) {
 			return '';
 		}
 
-		if (!Varien_Profiler::isEnabled()) {
+		if (!Varien_Profiler::isEnabled() && ! $this->getForceRender()) {
 			if (Mage::getStoreConfig('dev/debug/showDisabledMessage')) {
 
 				// Adding css. Want to be as obtrusive as possible and not add any file to the header (as bundling might be influenced by this)
@@ -209,8 +217,10 @@ class Aoe_Profiler_Block_Profiler extends Mage_Core_Block_Abstract {
 
         $hideLinesFasterThan = intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan'));
 
+        $title = $this->getTitle() ? $this->getTitle() : 'Profiler';
+
         $output .= <<<HTML
-            <div id="profiler"><h1>Profiler</h1>
+            <div id="profiler"><h1>{$title}</h1>
             <div id="p-filter">
                 <form id="filter-form">
                     <div class="form-block">
