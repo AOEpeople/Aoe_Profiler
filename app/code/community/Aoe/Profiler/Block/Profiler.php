@@ -329,20 +329,17 @@ HTML;
 		$offset = round(min(99, $offset));
 
 		$output = '<div class="progress">';
-			$output .= '<div class="progress-bar">';
-				$output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;"></div>';
+            $output .= '<div class="progress-bar1" style="width: '.$percent1.'%; margin-left: '.$offset.'%;"></div>';
 
-				if ($percent2 > 0) {
-					$percent2 = round(max(1, $percent2));
-					if ($percent1 + $percent2 + $offset > 100) {
-						// preventing line break in css progress bar if widths and margins are bigger than 100%
-						$percent2 = 100 - $percent1 - $offset;
-						$percent2 = max(0, $percent2);
-					}
-					$output .= '<div class="progress-bar2" style="width: '.$percent2.'%"></div>';
-				}
-
-				$output .= '</div>';
+            if ($percent2 > 0) {
+                $percent2 = round(max(1, $percent2));
+                if ($percent1 + $percent2 + $offset > 100) {
+                    // preventing line break in css progress bar if widths and margins are bigger than 100%
+                    $percent2 = 100 - $percent1 - $offset;
+                    $percent2 = max(0, $percent2);
+                }
+                $output .= '<div class="progress-bar2" style="width: '.$percent2.'%"></div>';
+            }
 		$output .= '</div>';
 		return $output;
 	}
