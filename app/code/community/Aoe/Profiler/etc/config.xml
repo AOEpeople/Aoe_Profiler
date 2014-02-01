@@ -2,7 +2,7 @@
 <config>
 	<modules>
 		<Aoe_Profiler>
-			<version>0.3.0</version>
+			<version>0.4.0</version>
 		</Aoe_Profiler>
 	</modules>
 
@@ -10,8 +10,18 @@
 		<models>
 			<aoe_profiler>
 				<class>Aoe_Profiler_Model</class>
+                <resourceModel>aoe_profiler_resource</resourceModel>
 			</aoe_profiler>
+            <aoe_profiler_resource>
+                <class>Aoe_Profiler_Model_Resource</class>
+                <entities>
+                    <profile>
+                        <table>aoeprofiler_profile</table>
+                    </profile>
+                </entities>
+            </aoe_profiler_resource>
 		</models>
+
 		<helpers>
 			<aoe_profiler>
 				<class>Aoe_Profiler_Helper</class>
@@ -27,6 +37,15 @@
                 </rewrite>
             </core>
 		</blocks>
+
+        <resources>
+            <aoe_profiler_setup>
+                <setup>
+                    <module>Aoe_Profiler</module>
+                </setup>
+            </aoe_profiler_setup>
+        </resources>
+
 	</global>
 
 	<default>
