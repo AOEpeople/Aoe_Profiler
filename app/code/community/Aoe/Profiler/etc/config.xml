@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<modules>
-		<Aoe_Profiler>
-			<version>0.4.0</version>
-		</Aoe_Profiler>
-	</modules>
+    <modules>
+        <Aoe_Profiler>
+            <version>0.4.0</version>
+        </Aoe_Profiler>
+    </modules>
 
-	<global>
-		<models>
-			<aoe_profiler>
-				<class>Aoe_Profiler_Model</class>
+    <global>
+        <models>
+            <aoe_profiler>
+                <class>Aoe_Profiler_Model</class>
                 <resourceModel>aoe_profiler_resource</resourceModel>
-			</aoe_profiler>
+            </aoe_profiler>
             <aoe_profiler_resource>
                 <class>Aoe_Profiler_Model_Resource</class>
                 <entities>
@@ -20,23 +20,23 @@
                     </profile>
                 </entities>
             </aoe_profiler_resource>
-		</models>
+        </models>
 
-		<helpers>
-			<aoe_profiler>
-				<class>Aoe_Profiler_Helper</class>
-			</aoe_profiler>
-		</helpers>
-		<blocks>
-			<aoe_profiler>
-				<class>Aoe_Profiler_Block</class>
-			</aoe_profiler>
+        <helpers>
+            <aoe_profiler>
+                <class>Aoe_Profiler_Helper</class>
+            </aoe_profiler>
+        </helpers>
+        <blocks>
+            <aoe_profiler>
+                <class>Aoe_Profiler_Block</class>
+            </aoe_profiler>
             <core>
                 <rewrite>
                     <profiler>Aoe_Profiler_Block_Profiler</profiler>
                 </rewrite>
             </core>
-		</blocks>
+        </blocks>
 
         <resources>
             <aoe_profiler_setup>
@@ -46,17 +46,17 @@
             </aoe_profiler_setup>
         </resources>
 
-	</global>
+    </global>
 
-	<default>
-		<dev>
-			<debug>
-				<showDisabledMessage>1</showDisabledMessage>
-				<hideLinesFasterThan>10</hideLinesFasterThan>
-				<logInvalidNesting>1</logInvalidNesting>
+    <default>
+        <dev>
+            <debug>
+                <showDisabledMessage>1</showDisabledMessage>
+                <hideLinesFasterThan>10</hideLinesFasterThan>
+                <logInvalidNesting>1</logInvalidNesting>
                 <remoteCallUrlTemplate><![CDATA[http://localhost:8091/?message=%s:%s]]></remoteCallUrlTemplate>
-			</debug>
-		</dev>
-	</default>
+            </debug>
+        </dev>
+    </default>
 
 </config>
