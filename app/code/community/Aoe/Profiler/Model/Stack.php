@@ -3,10 +3,15 @@
 class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
 {
 
-    protected $stackLog;
+    protected $stackLog = array();
     protected $treeData = array();
 
     protected $metrics = array('time', 'realmem' /*, 'emalloc' */);
+
+    protected function _construct()
+    {
+        $this->_init('aoe_profiler/stack');
+    }
 
     /**
      * @return Aoe_Profiler_Model_Stack
@@ -123,5 +128,23 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
             $arr[] = $uniqueId;
         }
     }
+
+    /**
+     * Before saving...
+     *
+     * @return Mage_Core_Model_Abstract
+     */
+    protected function _beforeSave()
+    {
+        $this->setStackData(serialize($this->stackLog));
+        return parent::_beforeSave();
+    }
+
+    protected function _afterLoad()
+    {
+        return parent::_afterLoad();
+        $this->stackLog = unserialize($this->getStackData());
+    }
+
 
 }

@@ -17,4 +17,21 @@ class Aoe_Profiler_Model_Observer
         Varien_Profiler::stop($block->getNameInLayout());
     }
 
+    /**
+     * Perist profile
+     *
+     * This method is called from the controller_front_send_response_after event
+     *
+     * @author Fabrizio Branca
+     * @since 2014-02-01
+     *
+     * @param Varien_Event_Observer $event
+     */
+    public function persistProfile(Varien_Event_Observer $event) {
+        $stack = Mage::getModel('aoe_profiler/stack'); /* @var $stack Aoe_Profiler_Model_Stack */
+        $stack->loadStackLogFromProfiler();
+        $stack->save();
+        Mage::log("Saved");
+    }
+
 }

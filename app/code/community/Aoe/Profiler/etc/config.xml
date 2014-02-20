@@ -7,6 +7,7 @@
     </modules>
 
     <global>
+
         <models>
             <aoe_profiler>
                 <class>Aoe_Profiler_Model</class>
@@ -15,9 +16,9 @@
             <aoe_profiler_resource>
                 <class>Aoe_Profiler_Model_Resource</class>
                 <entities>
-                    <profile>
-                        <table>aoeprofiler_profile</table>
-                    </profile>
+                    <stack>
+                        <table>aoe_profiler_stack</table>
+                    </stack>
                 </entities>
             </aoe_profiler_resource>
         </models>
@@ -27,6 +28,7 @@
                 <class>Aoe_Profiler_Helper</class>
             </aoe_profiler>
         </helpers>
+
         <blocks>
             <aoe_profiler>
                 <class>Aoe_Profiler_Block</class>
@@ -45,6 +47,18 @@
                 </setup>
             </aoe_profiler_setup>
         </resources>
+
+        <events>
+            <controller_front_send_response_after>
+                <observers>
+                    <persistent>
+                        <class>aoe_profiler/observer</class>
+                        <method>persistProfile</method>
+                    </persistent>
+                </observers>
+            </controller_front_send_response_after>
+        </events>
+
 
     </global>
 
