@@ -1,5 +1,24 @@
 <?php
 
+/**
+ * Class Aoe_Profiler_Model_Stack
+ *
+ * @author Fabrizio Branca
+ * @since 2014-08-15
+ *
+ * @method getStackData()
+ * @method getRoute()
+ * @method getUrl()
+ * @method getTotalTime()
+ * @method getTotalMemory()
+ * @method getCreatedAt()
+ * @method setStackData()
+ * @method setRoute()
+ * @method setUrl()
+ * @method setTotalTime()
+ * @method setTotalMemory()
+ * @method setCreatedAt()
+ */
 class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
 {
 
@@ -20,7 +39,14 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
     {
         Varien_Profiler::disable();
         $this->stackLog = Varien_Profiler::getStackLog();
+        $this->_hasDataChanges = true;
         return $this;
+    }
+
+    public function populateMetata()
+    {
+        $this->setUrl(Mage::app()->getRequest()->getRequestUri());
+        $this->setRoute(Mage::app()->getFrontController()->getAction()->getFullActionName());
     }
 
     public function getStackLog()
@@ -136,14 +162,19 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
      */
     protected function _beforeSave()
     {
+        $date = Mage::getModel('core/date')->gmtDate();
+        if ($this->isObjectNew() && !$this->getCreatedAt()) {
+            $this->setCreatedAt($date);
+        }
         $this->setStackData(serialize($this->stackLog));
         return parent::_beforeSave();
     }
 
     protected function _afterLoad()
     {
-        return parent::_afterLoad();
+        $result = parent::_afterLoad();
         $this->stackLog = unserialize($this->getStackData());
+        return $result;
     }
 
 

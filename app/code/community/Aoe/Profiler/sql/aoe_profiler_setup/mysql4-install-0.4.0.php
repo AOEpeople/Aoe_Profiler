@@ -14,6 +14,7 @@ $table = $this->getConnection()
         'nullable' => false,
         'primary' => true,
     ), 'Profile Id')
+    ->addColumn('created_at', Varien_Db_Ddl_Table::TYPE_TIMESTAMP, null, array(), 'Creation time')
     ->addColumn('stack_data', Varien_Db_Ddl_Table::TYPE_BLOB, null, array(), 'Data')
     ->addColumn('route', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Route')
     ->addColumn('url', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Url')
