@@ -27,7 +27,12 @@ class Aoe_Profiler_Model_Observer
      */
     public function persistProfile(Varien_Event_Observer $event) {
         // TODO:
-        // - configure which requests to log (admin vs. fe? only if parameter is set? only for a given threshold? configurable white/blacklist?)
+        // - configure which requests to log
+        // - admin vs. fe?
+        // - only if parameter is set?
+        // - only for a given threshold? configurable white/blacklist?
+        // - only from a given IP?
+        // - only a small sample?
         if (!Mage::app()->getStore()->isAdmin()) {
             $stack = Mage::getModel('aoe_profiler/stack'); /* @var $stack Aoe_Profiler_Model_Stack */
             $stack->loadStackLogFromProfiler();

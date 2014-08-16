@@ -62,6 +62,37 @@
 
     </global>
 
+    <adminhtml>
+        <layout>
+            <updates>
+                <aoe_layout>
+                    <file>aoe_profiler/aoe_profiler.xml</file>
+                </aoe_layout>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Aoe_Profiler>
+                    <files>
+                        <default>Aoe_Profiler.csv</default>
+                    </files>
+                </Aoe_Profiler>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <aoe_profiler before="Mage_Adminhtml">Aoe_Profiler_Adminhtml</aoe_profiler>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
     <default>
         <dev>
             <debug>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<profiler>
+    
+    <adminhtml_profiler_grid><!-- ajax grid -->
+         <block type="core/text_list" name="root" output="toHtml">
+            <block type="aoe_profiler/adminhtml_profiler_grid" name="aoe_profiler.grid"/>
+        </block>
+    </adminhtml_profiler_grid>
+    
+    <adminhtml_profiler_index>
+        <reference name="content">
+            <block type="aoe_profiler/adminhtml_profiler" name="aoe_profiler" />
+        </reference>
+    </adminhtml_profiler_index>
+    
+    <adminhtml_profiler_view>
+        <reference name="content">
+            <block type="aoe_profiler/adminhtml_profiler_view" name="aoe_profiler_view"/>
+        </reference>
+    </adminhtml_profiler_view>
+    
+</profiler>
