@@ -27,24 +27,25 @@ class Aoe_Profiler_Adminhtml_ProfilerController extends Mage_Adminhtml_Controlle
     /**
      * Init stack instance object and set it to registry
      *
-     * @return Aoe_Profiler_Model_Stack|false
+     * @return Aoe_Profiler_Model_Run|false
      */
     protected function _initStackInstance()
     {
         $this->_title($this->__('System'))->_title($this->__('AOE Profiler'));
 
-        $stackId = $this->getRequest()->getParam('id', null);
+        $stackId = $this->getRequest()->getParam('stack_id', null);
 
         if ($stackId) {
-            $stackInstance = Mage::getModel('aoe_profiler/stack'); /** @var $stackInstance Aoe_Profiler_Model_Stack */
+            $stackInstance = Mage::getModel('aoe_profiler/run'); /* @var $stackInstance Aoe_Profiler_Model_Run */
             $stackInstance->load($stackId);
             if (!$stackInstance->getId()) {
                 $this->_getSession()->addError(Mage::helper('aoe_profiler')->__('No data found with this id.'));
                 return false;
             }
+            Mage::register('current_stack_instance', $stackInstance);
+            return $stackInstance;
         }
-        Mage::register('current_stack_instance', $stackInstance);
-        return $stackInstance;
+        return false;
     }
 
     /**

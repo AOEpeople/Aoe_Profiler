@@ -16,9 +16,9 @@
             <aoe_profiler_resource>
                 <class>Aoe_Profiler_Model_Resource</class>
                 <entities>
-                    <stack>
-                        <table>aoe_profiler_stack</table>
-                    </stack>
+                    <run>
+                        <table>aoe_profiler_run</table>
+                    </run>
                 </entities>
             </aoe_profiler_resource>
         </models>

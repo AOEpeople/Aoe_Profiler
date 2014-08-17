@@ -19,7 +19,7 @@
  * @method setTotalMemory()
  * @method setCreatedAt()
  */
-class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
+class Aoe_Profiler_Model_Run extends Mage_Core_Model_Abstract
 {
 
     protected $stackLog = array();
@@ -29,11 +29,11 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
 
     protected function _construct()
     {
-        $this->_init('aoe_profiler/stack');
+        $this->_init('aoe_profiler/run');
     }
 
     /**
-     * @return Aoe_Profiler_Model_Stack
+     * @return Aoe_Profiler_Model_Run
      */
     public function loadStackLogFromProfiler()
     {
@@ -55,7 +55,7 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
     }
 
     /**
-     * @return Aoe_Profiler_Model_Stack
+     * @return Aoe_Profiler_Model_Run
      */
     public function processRawData()
     {
@@ -73,14 +73,6 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
     }
 
     /**
-     * @return array
-     */
-    public function getTreeData()
-    {
-        return $this->treeData;
-    }
-
-    /**
      * Update values. (Recursive function)
      *
      * @param $arr
@@ -88,7 +80,6 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
      */
     protected function updateValues(&$arr, $vKey = '')
     {
-
         $subSum = array_flip($this->metrics);
         foreach ($arr as $k => $v) {
 
@@ -113,6 +104,14 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
                 $this->stackLog[$vKey][$key . '_own'] = $this->stackLog[$vKey][$key . '_total'] - $subSum[$key];
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getTreeData()
+    {
+        return $this->treeData;
     }
 
     /**
@@ -174,6 +173,9 @@ class Aoe_Profiler_Model_Stack extends Mage_Core_Model_Abstract
     {
         $result = parent::_afterLoad();
         $this->stackLog = unserialize($this->getStackData());
+        if ($this->stackLog === false) {
+            Mage::throwException('Error while unserializing data');
+        }
         return $result;
     }
 

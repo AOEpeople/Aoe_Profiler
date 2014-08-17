@@ -268,6 +268,8 @@ class Varien_Profiler
                 $type = Varien_Profiler::TYPE_MODEL;
             } elseif (strpos($label, '__EAV_LOAD_MODEL__') === 0) {
                 $type = Varien_Profiler::TYPE_EAVMODEL;
+            } else {
+                $type = Varien_Profiler::TYPE_DEFAULT;
             }
         }
         return $type;
@@ -422,6 +424,21 @@ class Varien_Profiler
                 $data[$metric . '_total'] = $data[$metric . '_end_relative'] - $data[$metric . '_start_relative'];
             }
         }
+    }
+
+    /**
+     * Get totals
+     *
+     * @return array
+     */
+    public static function getTotals()
+    {
+        $totals = array();
+        $lastLog = end(self::$stackLog);
+        foreach (array('time', 'realmem', 'emalloc') as $metric) {
+            $totals[$metric] = $lastLog[$metric . '_end'] - self::$startValues[$metric];
+        }
+        return $totals;
     }
 
     /**

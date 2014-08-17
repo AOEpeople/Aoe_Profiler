@@ -1,0 +1,25 @@
+<?php /* @var $this Aoe_Profiler_Block_Filter */?>
+<div id="p-filter">
+    <form id="filter-form">
+        <div class="form-block">
+            <label for="text-filter">Search for:</label>
+            <input type="text" id="text-filter" value="" placeholder="Text or regex" title="Text or regex" />
+            <br />
+            <input type="checkbox" id="text-filter-case-sensitivity" value="" />
+            <label for="text-filter-case-sensitivity">Case sensitive</label>
+            <input type="checkbox" id="show-matches-descendants" value="" />
+            <label for="show-matches-descendants">Do not hide matches' descendants</label>
+        </div>
+        <div class="form-block" style="padding-left: 15px">
+            <div>Hide entries faster than
+                <input type="text" id="duration-filter" value="<?php echo intval(Mage::getStoreConfig('dev/debug/hideLinesFasterThan')) ?>" /> ms:
+                <button>Filter!</button>
+            </div>
+            <div id="p-track">
+                <div id="p-handle" class="selected" title="Drag me!">
+                    <img src="<?php echo $this->getSkinUrl('aoe_profiler/img/slider.png') ?>" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

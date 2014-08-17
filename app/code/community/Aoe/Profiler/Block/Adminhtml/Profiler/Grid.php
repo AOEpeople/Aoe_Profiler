@@ -23,12 +23,11 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
     /**
      * Prepare grid collection object
      *
-     * @return Aoe_Profiler_Model_Resource_Stack_Collection
+     * @return Aoe_Profiler_Model_Resource_Run_Collection
      */
     protected function _prepareCollection()
     {
-        /* @var $collection Aoe_Profiler_Model_Resource_Stack_Collection */
-        $collection = Mage::getModel('aoe_profiler/stack')->getCollection();
+        $collection = Mage::getModel('aoe_profiler/run')->getCollection(); /* @var $collection Aoe_Profiler_Model_Resource_Run_Collection */
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
@@ -67,15 +66,17 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
         ));
 
         $this->addColumn('total_time', array(
-            'header'    => Mage::helper('aoe_layout')->__('Time'),
-            'align'     => 'left',
+            'header'    => Mage::helper('aoe_layout')->__('Time [sec]'),
+            'align'     => 'right',
             'index'     => 'total_time',
+            'frame_callback' => array($this->helper('aoe_profiler'), 'formatTimeDecorator'),
         ));
 
         $this->addColumn('total_memory', array(
-            'header'    => Mage::helper('aoe_layout')->__('Memory'),
-            'align'     => 'left',
+            'header'    => Mage::helper('aoe_layout')->__('Memory [MB]'),
+            'align'     => 'right',
             'index'     => 'total_memory',
+            'frame_callback' => array($this->helper('aoe_profiler'), 'formatMemoryDecorator'),
         ));
 
         return parent::_prepareColumns();

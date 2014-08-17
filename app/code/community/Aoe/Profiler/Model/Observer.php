@@ -33,11 +33,16 @@ class Aoe_Profiler_Model_Observer
         // - only for a given threshold? configurable white/blacklist?
         // - only from a given IP?
         // - only a small sample?
-        if (!Mage::app()->getStore()->isAdmin()) {
-            $stack = Mage::getModel('aoe_profiler/stack'); /* @var $stack Aoe_Profiler_Model_Stack */
-            $stack->loadStackLogFromProfiler();
-            $stack->populateMetata();
-            $stack->save();
+        if (Varien_Profiler::isEnabled() && !Mage::app()->getStore()->isAdmin()) {
+            $run = Mage::getModel('aoe_profiler/run'); /* @var $run Aoe_Profiler_Model_Run */
+            $run->loadStackLogFromProfiler();
+            $run->populateMetata();
+
+            $totals = Varien_Profiler::getTotals();
+            $run->setTotalTime($totals['time']);
+            $run->setTotalMemory($totals['realmem']);
+
+            $run->save();
         }
     }
 

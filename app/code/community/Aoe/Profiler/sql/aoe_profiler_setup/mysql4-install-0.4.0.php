@@ -7,7 +7,7 @@ $this->startSetup();
  * Create table 'aoe_profiler/profile'
  */
 $table = $this->getConnection()
-    ->newTable($this->getTable('aoe_profiler/stack'))
+    ->newTable($this->getTable('aoe_profiler/run'))
     ->addColumn('id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
         'identity' => true,
         'unsigned' => true,
@@ -15,7 +15,7 @@ $table = $this->getConnection()
         'primary' => true,
     ), 'Profile Id')
     ->addColumn('created_at', Varien_Db_Ddl_Table::TYPE_TIMESTAMP, null, array(), 'Creation time')
-    ->addColumn('stack_data', Varien_Db_Ddl_Table::TYPE_BLOB, null, array(), 'Data')
+    ->addColumn('stack_data', Varien_Db_Ddl_Table::TYPE_VARBINARY, Varien_Db_Ddl_Table::MAX_VARBINARY_SIZE, array(), 'Data')
     ->addColumn('route', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Route')
     ->addColumn('url', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Url')
     ->addColumn('total_time', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Total Time')
