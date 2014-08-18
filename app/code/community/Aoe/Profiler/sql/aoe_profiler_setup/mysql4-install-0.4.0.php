@@ -18,8 +18,9 @@ $table = $this->getConnection()
     ->addColumn('stack_data', Varien_Db_Ddl_Table::TYPE_VARBINARY, Varien_Db_Ddl_Table::MAX_VARBINARY_SIZE, array(), 'Data')
     ->addColumn('route', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Route')
     ->addColumn('url', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Url')
-    ->addColumn('total_time', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Total Time')
-    ->addColumn('total_memory', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Total Memory');
+    ->addColumn('session_id', Varien_Db_Ddl_Table::TYPE_VARCHAR, 255, array(), 'Session ID')
+    ->addColumn('total_time', Varien_Db_Ddl_Table::TYPE_FLOAT, null, array(), 'Total Time in seconds')
+    ->addColumn('total_memory', Varien_Db_Ddl_Table::TYPE_FLOAT, null, array(), 'Total Memory in MB');
 $this->getConnection()->createTable($table);
 
 $this->endSetup();

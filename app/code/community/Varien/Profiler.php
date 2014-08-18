@@ -34,6 +34,40 @@ class Varien_Profiler
 
     static private $_logCallStack = false;
 
+    static private $_configuration;
+
+    /**
+     * Get configuration object
+     *
+     * @return stdClass
+     */
+    public static function getConfiguration()
+    {
+        if (is_null(self::$_configuration)) {
+            self::$_configuration = new stdClass();
+            self::$_configuration->trigger = 'never';
+            self::$_configuration->filters = new stdClass();
+
+            $file = BP . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'aoe_profiler.xml';
+            if (is_file($file)) {
+                $conf = simplexml_load_file($file);
+                if ($conf !== false) {
+                    self::$_configuration->trigger = (string)$conf->aoe_profiler->trigger;
+                    self::$_configuration->captureModelInfo = (bool)(string)$conf->aoe_profiler->captureModelInfo;
+                    self::$_configuration->captureBacktraces = (bool)(string)$conf->aoe_profiler->captureBacktraces;
+                    self::$_configuration->enableFilters = (bool)(string)$conf->aoe_profiler->enableFilters;
+                    if (self::$_configuration->enableFilters) {
+                        self::$_configuration->filters->sampling = (float)$conf->aoe_profiler->filters->sampling;
+                        self::$_configuration->filters->timeThreshold = (int)$conf->aoe_profiler->filters->timeThreshold;
+                        self::$_configuration->filters->memoryThreshold = (int)$conf->aoe_profiler->filters->memoryThreshold;
+                        self::$_configuration->filters->ipFilter = (string)$conf->aoe_profiler->filters->ipFilter;
+                    }
+                }
+            }
+        }
+        return self::$_configuration;
+    }
+
     /**
      * Check if profiler is enabled.
      *
@@ -44,9 +78,29 @@ class Varien_Profiler
     {
         if (!self::$_checkedEnabled) {
             self::$_checkedEnabled = true;
-            if ((isset($_GET['profile']) && $_GET['profile'] == true)
-                || (isset($_COOKIE['profile']) && $_COOKIE['profile'] == true)
-            ) {
+
+            $conf = self::getConfiguration();
+
+            $enabled = false;
+            if (strtolower($conf->trigger) == 'always') {
+                $enabled = true;
+            } elseif (strtolower($conf->trigger) == 'parameter') {
+                if ((isset($_GET['profile']) && $_GET['profile'] == true) || (isset($_COOKIE['profile']) && $_COOKIE['profile'] == true)) {
+                    $enabled = true;
+                }
+            }
+
+            // Process filters
+            if ($enabled && $conf->enableFilters) {
+                // TODO: implement IP filter
+                // sampling filter
+                if (rand(0,10000) > $conf->filters->sampling * 100) {
+                    $enabled = false;
+                }
+                // note: timeThreshold and memoryThreshold will be checked before persisting records. In these cases data will still be recorded during the request
+            }
+
+            if ($enabled) {
                 self::enable();
             }
         }
@@ -78,11 +132,11 @@ class Varien_Profiler
             'stack' => self::$stack,
             'time_start' => microtime(true),
             'realmem_start' => memory_get_usage(true),
-            'emalloc_start' => memory_get_usage(false),
+            // 'emalloc_start' => memory_get_usage(false),
             'type' => $type,
         );
 
-        if ($name == '__EAV_LOAD_MODEL__') {
+        if ($name == '__EAV_LOAD_MODEL__' && self::getConfiguration()->captureModelInfo) {
             $trace = debug_backtrace();
             $className = get_class($trace[1]['args'][0]);
             $entityId = $trace[1]['args'][1];
@@ -90,7 +144,7 @@ class Varien_Profiler
             self::$stackLog[$currentPointer]['detail'] = "$className, id: $entityId, attributes: " . var_export($attributes, true);
         }
 
-        if (isset($_GET['links']) && $_GET['links'] == true) {
+        if (self::getConfiguration()->captureBacktraces) {
             $trace = isset($trace) ? $trace : debug_backtrace();
             $fileAndLine = self::getFileAndLine($trace, $type, $name);
             self::$stackLog[$currentPointer]['file'] = $fileAndLine['file'];
@@ -319,7 +373,7 @@ class Varien_Profiler
 
         self::$stackLog[$currentPointer]['time_end'] = microtime(true);
         self::$stackLog[$currentPointer]['realmem_end'] = memory_get_usage(true);
-        self::$stackLog[$currentPointer]['emalloc_end'] = memory_get_usage(false);
+        // self::$stackLog[$currentPointer]['emalloc_end'] = memory_get_usage(false);
 
         // TODO: introduce configurable threshold
         if (self::$_logCallStack !== false) {
@@ -360,7 +414,7 @@ class Varien_Profiler
         self::$startValues = array(
             'time' => microtime(true),
             'realmem' => memory_get_usage(true),
-            'emalloc' => memory_get_usage(false)
+            // 'emalloc' => memory_get_usage(false)
         );
         self::$_enabled = true;
     }
@@ -418,7 +472,7 @@ class Varien_Profiler
     public static function calculate()
     {
         foreach (self::$stackLog as &$data) {
-            foreach (array('time', 'realmem', 'emalloc') as $metric) {
+            foreach (array('time', 'realmem' /* , 'emalloc' */) as $metric) {
                 $data[$metric . '_end_relative'] = $data[$metric . '_end'] - self::$startValues[$metric];
                 $data[$metric . '_start_relative'] = $data[$metric . '_start'] - self::$startValues[$metric];
                 $data[$metric . '_total'] = $data[$metric . '_end_relative'] - $data[$metric . '_start_relative'];
@@ -435,7 +489,7 @@ class Varien_Profiler
     {
         $totals = array();
         $lastLog = end(self::$stackLog);
-        foreach (array('time', 'realmem', 'emalloc') as $metric) {
+        foreach (array('time', 'realmem' /* , 'emalloc' */) as $metric) {
             $totals[$metric] = $lastLog[$metric . '_end'] - self::$startValues[$metric];
         }
         return $totals;

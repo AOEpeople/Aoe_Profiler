@@ -65,18 +65,22 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
             'index'     => 'url',
         ));
 
+        $this->addColumn('session_id', array(
+            'header'    => Mage::helper('aoe_layout')->__('Session Id'),
+            'align'     => 'left',
+            'index'     => 'session_id',
+        ));
+
         $this->addColumn('total_time', array(
             'header'    => Mage::helper('aoe_layout')->__('Time [sec]'),
             'align'     => 'right',
             'index'     => 'total_time',
-            'frame_callback' => array($this->helper('aoe_profiler'), 'formatTimeDecorator'),
         ));
 
         $this->addColumn('total_memory', array(
             'header'    => Mage::helper('aoe_layout')->__('Memory [MB]'),
             'align'     => 'right',
             'index'     => 'total_memory',
-            'frame_callback' => array($this->helper('aoe_profiler'), 'formatMemoryDecorator'),
         ));
 
         return parent::_prepareColumns();

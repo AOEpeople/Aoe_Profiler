@@ -26,23 +26,23 @@ class Aoe_Profiler_Model_Observer
      * @param Varien_Event_Observer $event
      */
     public function persistProfile(Varien_Event_Observer $event) {
-        // TODO:
-        // - configure which requests to log
-        // - admin vs. fe?
-        // - only if parameter is set?
-        // - only for a given threshold? configurable white/blacklist?
-        // - only from a given IP?
-        // - only a small sample?
+        // TODO: currently admin requests will not be logged. Later this should be controlled via a white/blacklist
         if (Varien_Profiler::isEnabled() && !Mage::app()->getStore()->isAdmin()) {
-            $run = Mage::getModel('aoe_profiler/run'); /* @var $run Aoe_Profiler_Model_Run */
-            $run->loadStackLogFromProfiler();
-            $run->populateMetata();
-
             $totals = Varien_Profiler::getTotals();
-            $run->setTotalTime($totals['time']);
-            $run->setTotalMemory($totals['realmem']);
+            $conf = Varien_Profiler::getConfiguration();
 
-            $run->save();
+            if ((!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) ||
+                (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold)
+            ) {
+                $run = Mage::getModel('aoe_profiler/run'); /* @var $run Aoe_Profiler_Model_Run */
+                $run->loadStackLogFromProfiler();
+                $run->populateMetata();
+
+                $run->setTotalTime($totals['time']);
+                $run->setTotalMemory((float)$totals['realmem']/(1024*1024));
+
+                $run->save();
+            }
         }
     }
 

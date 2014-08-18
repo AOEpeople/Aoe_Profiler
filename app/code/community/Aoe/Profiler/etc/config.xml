@@ -96,12 +96,22 @@
     <default>
         <dev>
             <debug>
-                <showDisabledMessage>1</showDisabledMessage>
+                <trigger>parameter</trigger>
+                <enableFilters>1</enableFilters>
+                <sampling>100</sampling>
+                <memoryThreshold>0</memoryThreshold>
+                <timeThreshold>0</timeThreshold>
+                <ipFilter></ipFilter>
                 <hideLinesFasterThan>10</hideLinesFasterThan>
-                <logInvalidNesting>1</logInvalidNesting>
-                <remoteCallUrlTemplate><![CDATA[http://localhost:8091/?message=%s:%s]]></remoteCallUrlTemplate>
+                <captureModelInfo>1</captureModelInfo>
+                <captureBacktraces>parameter</captureBacktraces>
+                <remoteCallUrlTemplate><![CDATA[http://localhost:8091/?message=%1$s:%2$s]]></remoteCallUrlTemplate>
             </debug>
         </dev>
     </default>
 
 </config>
+
+
+
+

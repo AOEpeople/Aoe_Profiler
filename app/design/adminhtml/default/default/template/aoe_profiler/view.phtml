@@ -6,14 +6,14 @@
 <div class="content-header">
 <table cellspacing="0">
     <tr>
-        <td style="width:50%;"><h3 class="icon-head"><?php echo Mage::helper('aoe_scheduler')->__('Run details') ?></h3></td>
+        <td style="width:50%;"><h3 class="icon-head"><?php echo Mage::helper('aoe_scheduler')->__('Aoe Profiler run details') ?></h3></td>
         <td class="a-right">
             <?php echo $this->getButtonsHtml() ?>
-            <?php echo $this->getChildHtml('aoe_profiler_filter') ?>
         </td>
     </tr>
 </table>
 </div>
+<?php echo $this->getChildHtml('aoe_profiler_filter') ?>
 <div>
     <?php echo $this->getChildHtml('aoe_profiler_tree') ?>
 </div>

@@ -12,12 +12,14 @@
  * @method getTotalTime()
  * @method getTotalMemory()
  * @method getCreatedAt()
+ * @method getSessionId()
  * @method setStackData()
  * @method setRoute()
  * @method setUrl()
  * @method setTotalTime()
  * @method setTotalMemory()
  * @method setCreatedAt()
+ * @method setSessionId()
  */
 class Aoe_Profiler_Model_Run extends Mage_Core_Model_Abstract
 {
@@ -47,6 +49,7 @@ class Aoe_Profiler_Model_Run extends Mage_Core_Model_Abstract
     {
         $this->setUrl(Mage::app()->getRequest()->getRequestUri());
         $this->setRoute(Mage::app()->getFrontController()->getAction()->getFullActionName());
+        $this->setSessionId(Mage::getSingleton('core/session')->getSessionId());
     }
 
     public function getStackLog()
