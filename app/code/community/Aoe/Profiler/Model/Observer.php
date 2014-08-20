@@ -31,7 +31,7 @@ class Aoe_Profiler_Model_Observer
             $totals = Varien_Profiler::getTotals();
             $conf = Varien_Profiler::getConfiguration();
 
-            if ((!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) ||
+            if ((!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
                 (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold)
             ) {
                 $run = Mage::getModel('aoe_profiler/run'); /* @var $run Aoe_Profiler_Model_Run */
