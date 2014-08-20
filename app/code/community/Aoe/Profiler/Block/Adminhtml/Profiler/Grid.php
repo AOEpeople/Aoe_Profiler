@@ -40,13 +40,14 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
     protected function _prepareColumns()
     {
         $this->addColumn('stack_id', array(
-            'header'    => Mage::helper('aoe_layout')->__('Id'),
+            'header'    => Mage::helper('aoe_profiler')->__('Id'),
             'align'     => 'left',
             'index'     => 'id',
+            'type'      => 'number',
         ));
 
         $this->addColumn('created_at', array(
-            'header'    => Mage::helper('aoe_layout')->__('Created'),
+            'header'    => Mage::helper('aoe_profiler')->__('Created'),
             'align'     => 'left',
             'index'     => 'created_at',
             'type'      => 'date',
@@ -54,33 +55,35 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
         ));
 
         $this->addColumn('route', array(
-            'header'    => Mage::helper('aoe_layout')->__('Route'),
+            'header'    => Mage::helper('aoe_profiler')->__('Route'),
             'align'     => 'left',
             'index'     => 'route',
         ));
 
         $this->addColumn('url', array(
-            'header'    => Mage::helper('aoe_layout')->__('Url'),
+            'header'    => Mage::helper('aoe_profiler')->__('Url'),
             'align'     => 'left',
             'index'     => 'url',
         ));
 
         $this->addColumn('session_id', array(
-            'header'    => Mage::helper('aoe_layout')->__('Session Id'),
+            'header'    => Mage::helper('aoe_profiler')->__('Session Id'),
             'align'     => 'left',
             'index'     => 'session_id',
         ));
 
         $this->addColumn('total_time', array(
-            'header'    => Mage::helper('aoe_layout')->__('Time [sec]'),
+            'header'    => Mage::helper('aoe_profiler')->__('Time [sec]'),
             'align'     => 'right',
             'index'     => 'total_time',
+            'type'      => 'number',
         ));
 
         $this->addColumn('total_memory', array(
-            'header'    => Mage::helper('aoe_layout')->__('Memory [MB]'),
+            'header'    => Mage::helper('aoe_profiler')->__('Memory [MB]'),
             'align'     => 'right',
             'index'     => 'total_memory',
+            'type'      => 'number',
         ));
 
         return parent::_prepareColumns();
