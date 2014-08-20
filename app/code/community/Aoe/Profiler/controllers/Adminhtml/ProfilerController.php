@@ -53,9 +53,18 @@ class Aoe_Profiler_Adminhtml_ProfilerController extends Mage_Adminhtml_Controlle
      */
     public function indexAction()
     {
-        $this->_title($this->__('System'))->_title($this->__('AOE Layout'));
+        $this->_title($this->__('System'))->_title($this->__('AOE Profiler'));
 
         $this->_initAction();
+        $this->renderLayout();
+    }
+
+    /**
+     * Layout Grid
+     */
+    public function gridAction()
+    {
+        $this->loadLayout();
         $this->renderLayout();
     }
 
