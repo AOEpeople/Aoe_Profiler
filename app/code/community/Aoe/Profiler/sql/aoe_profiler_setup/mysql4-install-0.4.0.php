@@ -3,6 +3,8 @@
 /* @var $this Mage_Core_Model_Resource_Setup */
 $this->startSetup();
 
+$this->getConnection()->dropTable($this->getTable('aoe_profiler/run'));
+
 /**
  * Create table 'aoe_profiler/profile'
  */
