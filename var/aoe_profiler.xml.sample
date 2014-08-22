@@ -48,11 +48,11 @@ This file is expected to be in var/aoe_profiler.xml
             <memoryThreshold>0</memoryThreshold><!-- in bytes -->
 
             <!--
-            Only requests from the configured IPs will be logged.
-            Leave empty to allow from everywhere.
-            Also check if a reverse proxy is in place that is not configured to show the actual IP.
+            Regex pattern for $_SERVER['REQUEST_URI']. If empty the whitelist/blacklist is not active (whitelist will allow everything and blacklist
+            won't block anything). The whitelist has a higher priority than the blacklist
             -->
-            <ipFilter></ipFilter>
+            <requestUriWhiteList><![CDATA[]]></requestUriWhiteList>
+            <requestUriBlackList><![CDATA[/^\/index\.php\/admin\//]]></requestUriBlackList><!-- this example blocks all admin urls -->
         </filters>
 
         <!--

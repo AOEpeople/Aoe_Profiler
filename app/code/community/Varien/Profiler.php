@@ -61,6 +61,8 @@ class Varien_Profiler
                         self::$_configuration->filters->timeThreshold = (int)$conf->aoe_profiler->filters->timeThreshold;
                         self::$_configuration->filters->memoryThreshold = (int)$conf->aoe_profiler->filters->memoryThreshold;
                         self::$_configuration->filters->ipFilter = (string)$conf->aoe_profiler->filters->ipFilter;
+                        self::$_configuration->filters->requestUriWhiteList = (string)$conf->aoe_profiler->filters->requestUriWhiteList;
+                        self::$_configuration->filters->requestUriBlackList = (string)$conf->aoe_profiler->filters->requestUriBlackList;
                     }
                 }
             }
@@ -92,11 +94,21 @@ class Varien_Profiler
 
             // Process filters
             if ($enabled && $conf->enableFilters) {
-                // TODO: implement IP filter
+
                 // sampling filter
-                if (rand(0,10000) > $conf->filters->sampling * 100) {
+                if ($enabled && rand(0,10000) > $conf->filters->sampling * 100) {
                     $enabled = false;
                 }
+
+                // request uri whitelist/blacklist
+                $requestUri = $_SERVER['REQUEST_URI'];
+                if ($enabled && $conf->filters->requestUriWhiteList && !preg_match($conf->filters->requestUriWhiteList, $requestUri)) {
+                    $enabled = false;
+                }
+                if ($enabled && $conf->filters->requestUriBlackList && preg_match($conf->filters->requestUriBlackList, $requestUri)) {
+                    $enabled = false;
+                }
+
                 // note: timeThreshold and memoryThreshold will be checked before persisting records. In these cases data will still be recorded during the request
             }
 

@@ -27,7 +27,7 @@ class Aoe_Profiler_Model_Observer
      */
     public function persistProfile(Varien_Event_Observer $event) {
         // TODO: currently admin requests will not be logged. Later this should be controlled via a white/blacklist
-        if (Varien_Profiler::isEnabled() && !Mage::app()->getStore()->isAdmin()) {
+        if (Varien_Profiler::isEnabled() /* && !Mage::app()->getStore()->isAdmin() */) {
             $totals = Varien_Profiler::getTotals();
             $conf = Varien_Profiler::getConfiguration();
 
