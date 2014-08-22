@@ -101,7 +101,7 @@ class Varien_Profiler
                 }
 
                 // request uri whitelist/blacklist
-                $requestUri = $_SERVER['REQUEST_URI'];
+                $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : ''; // TODO: use script name instead for cli?
                 if ($enabled && $conf->filters->requestUriWhiteList && !preg_match($conf->filters->requestUriWhiteList, $requestUri)) {
                     $enabled = false;
                 }
