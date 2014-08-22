@@ -139,8 +139,8 @@ class Varien_Profiler
         if ($name == '__EAV_LOAD_MODEL__' && self::getConfiguration()->captureModelInfo) {
             $trace = debug_backtrace();
             $className = get_class($trace[1]['args'][0]);
-            $entityId = $trace[1]['args'][1];
-            $attributes = $trace[1]['args'][2];
+            $entityId = isset($trace[1]['args'][1]) ? $trace[1]['args'][1] : 'not set';
+            $attributes = isset($trace[1]['args'][2]) ? $trace[1]['args'][2] : null;
             self::$stackLog[$currentPointer]['detail'] = "$className, id: $entityId, attributes: " . var_export($attributes, true);
         }
 
