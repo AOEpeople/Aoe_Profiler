@@ -15,4 +15,12 @@ class Aoe_Profiler_Model_Resource_Run extends Mage_Core_Model_Resource_Db_Abstra
         $this->_init('aoe_profiler/run', 'id');
     }
 
+    public function deleteOlderThan($days) {
+        $days = max(1, intval($days));
+        $this->_getWriteAdapter()->delete(
+            $this->getMainTable(),
+            'created_at < NOW() - INTERVAL '.$days.' DAY'
+        );
+    }
+
 }

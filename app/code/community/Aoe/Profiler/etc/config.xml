@@ -96,19 +96,26 @@
     <default>
         <dev>
             <debug>
-                <trigger>parameter</trigger>
-                <enableFilters>1</enableFilters>
-                <sampling>100</sampling>
-                <memoryThreshold>0</memoryThreshold>
-                <timeThreshold>0</timeThreshold>
-                <ipFilter></ipFilter>
                 <hideLinesFasterThan>10</hideLinesFasterThan>
-                <captureModelInfo>1</captureModelInfo>
-                <captureBacktraces>parameter</captureBacktraces>
+                <logInvalidNesting>0</logInvalidNesting>
                 <remoteCallUrlTemplate><![CDATA[http://localhost:8091/?message=%1$s:%2$s]]></remoteCallUrlTemplate>
+                <scheduler_cron_expr_profiler><![CDATA[45 3 * * *]]></scheduler_cron_expr_profiler>
+                <keepDays>1</keepDays>
             </debug>
         </dev>
     </default>
+
+    <crontab>
+        <jobs>
+            <aoeprofiler_cleanup>
+                <schedule><config_path>dev/debug/scheduler_cron_expr_profiler</config_path></schedule>
+                <run>
+                    <model>aoe_profiler/cron::cleanup</model>
+                </run>
+            </aoeprofiler_cleanup>
+        </jobs>
+    </crontab>
+
 
 </config>
 
