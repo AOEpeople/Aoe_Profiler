@@ -41,7 +41,11 @@ class Aoe_Profiler_Model_Observer
                 $run->setTotalTime($totals['time']);
                 $run->setTotalMemory((float)$totals['realmem']/(1024*1024));
 
-                $run->save();
+                try {
+                    $run->save();
+                } catch (Exception $e) {
+                    Mage::log('Error while saving Aoe_Profiler data: '. $e->getMessage());
+                }
             }
         }
     }
