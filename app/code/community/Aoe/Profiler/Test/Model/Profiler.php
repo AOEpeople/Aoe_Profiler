@@ -71,7 +71,6 @@ class Aoe_Profiler_Test_Model_Profiler extends EcomDev_PHPUnit_Test_Case {
 
     public function samplingRates() {
         return array(
-            array(0, 2, 0),
             array(100, 100000, 100000),
             array(1, 1100, 900),
             array(50, 52000, 48000),
