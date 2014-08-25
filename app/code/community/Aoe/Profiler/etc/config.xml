@@ -116,6 +116,13 @@
         </jobs>
     </crontab>
 
+    <phpunit>
+        <suite>
+            <modules>
+                <Aoe_Profiler/>
+            </modules>
+        </suite>
+    </phpunit>
 
 </config>
 

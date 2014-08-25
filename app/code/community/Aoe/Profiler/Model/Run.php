@@ -45,11 +45,15 @@ class Aoe_Profiler_Model_Run extends Mage_Core_Model_Abstract
         return $this;
     }
 
-    public function populateMetata()
+    public function populateMetadata()
     {
         $this->setUrl(Mage::app()->getRequest()->getRequestUri());
         $this->setRoute(Mage::app()->getFrontController()->getAction()->getFullActionName());
         $this->setSessionId(Mage::getSingleton('core/session')->getSessionId());
+
+        $totals = Varien_Profiler::getTotals();
+        $this->setTotalTime($totals['time']);
+        $this->setTotalMemory((float)$totals['realmem']/(1024*1024));
     }
 
     public function getStackLog()

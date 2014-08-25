@@ -60,7 +60,6 @@ class Varien_Profiler
                         self::$_configuration->filters->sampling = (float)$conf->aoe_profiler->filters->sampling;
                         self::$_configuration->filters->timeThreshold = (int)$conf->aoe_profiler->filters->timeThreshold;
                         self::$_configuration->filters->memoryThreshold = (int)$conf->aoe_profiler->filters->memoryThreshold;
-                        self::$_configuration->filters->ipFilter = (string)$conf->aoe_profiler->filters->ipFilter;
                         self::$_configuration->filters->requestUriWhiteList = (string)$conf->aoe_profiler->filters->requestUriWhiteList;
                         self::$_configuration->filters->requestUriBlackList = (string)$conf->aoe_profiler->filters->requestUriBlackList;
                     }
@@ -68,6 +67,32 @@ class Varien_Profiler
             }
         }
         return self::$_configuration;
+    }
+
+    /**
+     * Set configuration (for unit test usage)
+     *
+     * @param $_configuration
+     */
+    public static function setConfiguration($_configuration) {
+        self::$_configuration = $_configuration;
+    }
+
+    /**
+     * Reset profiler (for unit test usage)
+     */
+    public static function reInit() {
+        self::$startValues = array();
+        self::$stackLevel = 0;
+        self::$stack = array();
+        self::$stackLevelMax = array();
+        self::$stackLog = array();
+        self::$uniqueCounter = 0;
+        self::$currentPointerStack = array();
+        self::$_enabled = false;
+        self::$_checkedEnabled = false;
+        self::$_logCallStack = false;
+        self::$_configuration = null;
     }
 
     /**
@@ -96,7 +121,7 @@ class Varien_Profiler
             if ($enabled && $conf->enableFilters) {
 
                 // sampling filter
-                if ($enabled && rand(0,10000) > $conf->filters->sampling * 100) {
+                if ($enabled && rand(0,100000) > $conf->filters->sampling * 1000) {
                     $enabled = false;
                 }
 
@@ -490,6 +515,14 @@ class Varien_Profiler
                 $data[$metric . '_total'] = $data[$metric . '_end_relative'] - $data[$metric . '_start_relative'];
             }
         }
+    }
+
+    public static function checkThresholds()
+    {
+        $conf = self::getConfiguration();
+        $totals = self::getTotals();
+        return (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
+               (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold);
     }
 
     /**
