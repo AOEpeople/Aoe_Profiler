@@ -1,5 +1,7 @@
 # AOE Profiler
 
+[![Build Status](https://travis-ci.org/AOEpeople/Aoe_Profiler.svg?branch=hackathon)](https://travis-ci.org/AOEpeople/Aoe_Profiler)
+
 http://www.fabrizio-branca.de/magento-profiler.html
 
 ## Usage
