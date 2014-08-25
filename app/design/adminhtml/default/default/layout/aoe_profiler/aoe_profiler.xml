@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<profiler>
+    
+    <adminhtml_profiler_grid><!-- ajax grid -->
+         <block type="core/text_list" name="root" output="toHtml">
+            <block type="aoe_profiler/adminhtml_profiler_grid" name="aoe_profiler.grid"/>
+        </block>
+    </adminhtml_profiler_grid>
+    
+    <adminhtml_profiler_index>
+        <reference name="content">
+            <block type="aoe_profiler/adminhtml_profiler" name="aoe_profiler" />
+        </reference>
+    </adminhtml_profiler_index>
+    
+    <adminhtml_profiler_view>
+        <reference name="head">
+            <action method="addItem"><type>skin_js</type><script>aoe_profiler/js/profiler.js</script></action>
+            <action method="addCss"><name>aoe_profiler/css/styles.css</name></action>
+        </reference>
+        <reference name="content">
+            <block type="aoe_profiler/adminhtml_profiler_view" name="aoe_profiler_view">
+                <block type="aoe_profiler/tree" name="aoe_profiler_tree" />
+                <block type="aoe_profiler/filter" name="aoe_profiler_filter" />
+            </block>
+        </reference>
+    </adminhtml_profiler_view>
+    
+</profiler>

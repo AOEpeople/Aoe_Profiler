@@ -175,49 +175,59 @@
 #profiler .hint-small {
     font-size: 10px;
 }
-#profiler #duration-filter {
-    width: 40px;
-    text-align: center;
-}
 #profiler #treeView li.filtered {
     display: none;
 }
-#profiler #filter-form button {
-    padding: 0 10px;
-}
+
 #profiler input {
     width: auto;
     margin: auto;
     padding: auto;
 }
-#profiler #filter-form .form-block {
-    display: table-cell;
-}
+
 #profiler font {
     background-color: yellow;
 }
-#profiler #p-filter {
+
+
+
+
+
+
+#filter-form .form-block {
+    display: table-cell;
+}
+
+#duration-filter {
+    width: 40px;
+    text-align: center;
+}
+#filter-form button {
+    padding: 0 10px;
+}
+#p-filter {
     cursor: pointer;
     border: 1px solid black;
     padding: 5px;
     display: inline-block;
-    position: absolute;
-    top: 20px;
-    right: 20px;
 }
-#profiler #p-track {
+#p-track {
     position:relative;
     height:4px;
     background-color: #ccc;
     margin: 6px 0;
 }
-#profiler #p-handle {
+#p-handle {
     position: absolute;
     left: -3px;
     top: -6px;
     width: 9px;
     height: 22px;
 }
+
+
+
+
 #profiler li.selected {
     background-color: #BAFFBA;
 }
@@ -225,3 +235,15 @@
 #profiler li.selected > .info {
     font-weight: bold;
 }
+
+
+
+
+#profiler .profiler-open { background-image: url('../img/button-open.png'); }
+#profiler .profiler-closed { background-image: url('../img/button-closed.png'); }
+#profiler .type-default { background-image: url('../img/led-icons/page.png'); }
+#profiler .type-db { background-image: url('../img/led-icons/database.png'); }
+#profiler .type-template { background-image: url('../img/led-icons/template.png'); }
+#profiler .type-block { background-image: url('../img/led-icons/brick.png'); }
+#profiler .type-event { background-image: url('../img/led-icons/anchor.png'); }
+#profiler .type-observer { background-image: url('../img/led-icons/pin.png'); }

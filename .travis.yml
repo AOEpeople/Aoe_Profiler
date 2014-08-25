@@ -1,0 +1,31 @@
+language: php
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+matrix:
+  allow_failures:
+  - php: 5.6
+  - php: hhvm
+env:
+  - MAGENTO_VERSION=magento-ce-1.9.0.1
+  - MAGENTO_VERSION=magento-ce-1.8.1.0
+  - MAGENTO_VERSION=magento-ce-1.8.0.0
+  - MAGENTO_VERSION=magento-ce-1.7.0.2
+before_script:
+  - mysql -e 'create database mage;'
+  - mysql -e 'create database mage_test;'
+  - git clone https://github.com/AOEpeople/MageTestStand.git ${TRAVIS_BUILD_DIR}/../build-environment
+  - cp -rf ${TRAVIS_BUILD_DIR} ${TRAVIS_BUILD_DIR}/../build-environment/.modman/
+  - ${TRAVIS_BUILD_DIR}/../build-environment/install.sh
+script:
+  - cd ${TRAVIS_BUILD_DIR}/../build-environment/htdocs
+  - ${TRAVIS_BUILD_DIR}/../build-environment/bin/phpunit --colors -d display_errors=1
+notifications:
+  email:
+    recipients:
+      - travis@fabrizio-branca.de
+    on_success: always
+    on_failure: always

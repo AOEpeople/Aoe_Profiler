@@ -1,43 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-	<modules>
-		<Aoe_Profiler>
-			<version>0.3.0</version>
-		</Aoe_Profiler>
-	</modules>
+    <modules>
+        <Aoe_Profiler>
+            <version>0.4.0</version>
+        </Aoe_Profiler>
+    </modules>
 
-	<global>
-		<models>
-			<aoe_profiler>
-				<class>Aoe_Profiler_Model</class>
-			</aoe_profiler>
-		</models>
-		<helpers>
-			<aoe_profiler>
-				<class>Aoe_Profiler_Helper</class>
-			</aoe_profiler>
-		</helpers>
-		<blocks>
-			<aoe_profiler>
-				<class>Aoe_Profiler_Block</class>
-			</aoe_profiler>
+    <global>
+
+        <models>
+            <aoe_profiler>
+                <class>Aoe_Profiler_Model</class>
+                <resourceModel>aoe_profiler_resource</resourceModel>
+            </aoe_profiler>
+            <aoe_profiler_resource>
+                <class>Aoe_Profiler_Model_Resource</class>
+                <entities>
+                    <run>
+                        <table>aoe_profiler_run</table>
+                    </run>
+                </entities>
+            </aoe_profiler_resource>
+        </models>
+
+        <helpers>
+            <aoe_profiler>
+                <class>Aoe_Profiler_Helper</class>
+            </aoe_profiler>
+        </helpers>
+
+        <blocks>
+            <aoe_profiler>
+                <class>Aoe_Profiler_Block</class>
+            </aoe_profiler>
             <core>
                 <rewrite>
                     <profiler>Aoe_Profiler_Block_Profiler</profiler>
                 </rewrite>
             </core>
-		</blocks>
-	</global>
+        </blocks>
 
-	<default>
-		<dev>
-			<debug>
-				<showDisabledMessage>1</showDisabledMessage>
-				<hideLinesFasterThan>10</hideLinesFasterThan>
-				<logInvalidNesting>1</logInvalidNesting>
-                <remoteCallUrlTemplate><![CDATA[http://localhost:8091/?message=%s:%s]]></remoteCallUrlTemplate>
-			</debug>
-		</dev>
-	</default>
+        <resources>
+            <aoe_profiler_setup>
+                <setup>
+                    <module>Aoe_Profiler</module>
+                </setup>
+            </aoe_profiler_setup>
+        </resources>
+
+        <events>
+            <controller_front_send_response_after>
+                <observers>
+                    <persistent>
+                        <class>aoe_profiler/observer</class>
+                        <method>persistProfile</method>
+                    </persistent>
+                </observers>
+            </controller_front_send_response_after>
+        </events>
+
+
+    </global>
+
+    <adminhtml>
+        <layout>
+            <updates>
+                <aoe_layout>
+                    <file>aoe_profiler/aoe_profiler.xml</file>
+                </aoe_layout>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Aoe_Profiler>
+                    <files>
+                        <default>Aoe_Profiler.csv</default>
+                    </files>
+                </Aoe_Profiler>
+            </modules>
+        </translate>
+    </adminhtml>
+
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <aoe_profiler before="Mage_Adminhtml">Aoe_Profiler_Adminhtml</aoe_profiler>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+
+    <default>
+        <dev>
+            <debug>
+                <hideLinesFasterThan>10</hideLinesFasterThan>
+                <logInvalidNesting>0</logInvalidNesting>
+                <remoteCallUrlTemplate><![CDATA[http://localhost:8091/?message=%1$s:%2$s]]></remoteCallUrlTemplate>
+                <scheduler_cron_expr_profiler><![CDATA[45 3 * * *]]></scheduler_cron_expr_profiler>
+                <keepDays>1</keepDays>
+            </debug>
+        </dev>
+    </default>
+
+    <crontab>
+        <jobs>
+            <aoeprofiler_cleanup>
+                <schedule><config_path>dev/debug/scheduler_cron_expr_profiler</config_path></schedule>
+                <run>
+                    <model>aoe_profiler/cron::cleanup</model>
+                </run>
+            </aoeprofiler_cleanup>
+        </jobs>
+    </crontab>
+
+    <phpunit>
+        <suite>
+            <modules>
+                <Aoe_Profiler/>
+            </modules>
+        </suite>
+    </phpunit>
 
 </config>
+
+
+
+
