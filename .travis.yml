@@ -14,13 +14,8 @@ env:
   - MAGENTO_VERSION=magento-ce-1.8.1.0
   - MAGENTO_VERSION=magento-ce-1.8.0.0
   - MAGENTO_VERSION=magento-ce-1.7.0.2
-before_script:
-  - git clone https://github.com/AOEpeople/MageTestStand.git ${TRAVIS_BUILD_DIR}/build-environment
-  - ln -s ${TRAVIS_BUILD_DIR} ${TRAVIS_BUILD_DIR}/build-environment/.modman/__testModule
-  - ${TRAVIS_BUILD_DIR}/build-environment/install.sh
 script:
-  - cd ${TRAVIS_BUILD_DIR}/build-environment/htdocs
-  - ${TRAVIS_BUILD_DIR}/build-environment/bin/phpunit --colors -d display_errors=1
+  - wget -O - https://raw.githubusercontent.com/AOEpeople/MageTestStand/master/ci-autorunner.sh | bash
 notifications:
   email:
     recipients:
