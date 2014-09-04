@@ -15,8 +15,6 @@ env:
   - MAGENTO_VERSION=magento-ce-1.8.0.0
   - MAGENTO_VERSION=magento-ce-1.7.0.2
 before_script:
-  - mysql -e 'create database mage;'
-  - mysql -e 'create database mage_test;'
   - git clone https://github.com/AOEpeople/MageTestStand.git ${TRAVIS_BUILD_DIR}/../build-environment
   - cp -rf ${TRAVIS_BUILD_DIR} ${TRAVIS_BUILD_DIR}/../build-environment/.modman/
   - ${TRAVIS_BUILD_DIR}/../build-environment/install.sh
