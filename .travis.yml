@@ -15,7 +15,7 @@ env:
   - MAGENTO_VERSION=magento-ce-1.8.0.0
   - MAGENTO_VERSION=magento-ce-1.7.0.2
 script:
-  - wget -O - https://raw.githubusercontent.com/AOEpeople/MageTestStand/master/ci-autorunner.sh | bash
+  - curl -sSL https://raw.githubusercontent.com/AOEpeople/MageTestStand/master/ci-autorunner.sh | bash
 notifications:
   email:
     recipients:
