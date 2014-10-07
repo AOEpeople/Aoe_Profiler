@@ -1,4 +1,4 @@
-app/etc/modules/*						app/etc/modules/
+app/etc/modules/Aoe_Profiler.xml						app/etc/modules/Aoe_Profiler.xml
 app/code/community/Aoe/Profiler				app/code/community/Aoe/Profiler
 app/code/community/Varien/Profiler.php		app/code/community/Varien/Profiler.php
 app/code/community/Zend/Db/Profiler.php		app/code/community/Zend/Db/Profiler.php
