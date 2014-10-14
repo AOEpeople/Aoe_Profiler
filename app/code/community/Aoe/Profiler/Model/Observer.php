@@ -26,6 +26,10 @@ class Aoe_Profiler_Model_Observer
      * @param Varien_Event_Observer $event
      */
     public function persistProfile(Varien_Event_Observer $event) {
+        if (!method_exists('Varien_Profiler', 'isEnabled')) {
+            Mage::log('Looks like the wrong Profiler class is being loaded at this point.');
+            return;
+        }
         if (Varien_Profiler::isEnabled() && Varien_Profiler::checkThresholds()) {
             $run = Mage::getModel('aoe_profiler/run'); /* @var $run Aoe_Profiler_Model_Run */
             $run->loadStackLogFromProfiler();
