@@ -28,6 +28,7 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
     protected function _prepareCollection()
     {
         $collection = Mage::getModel('aoe_profiler/run')->getCollection(); /* @var $collection Aoe_Profiler_Model_Resource_Run_Collection */
+        $collection->addFieldToSelect(array('id','created_at', 'route', 'url', 'session_id', 'total_time', 'total_memory'));
         $this->setCollection($collection);
         return parent::_prepareCollection();
     }
