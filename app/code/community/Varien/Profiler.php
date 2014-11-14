@@ -521,7 +521,7 @@ class Varien_Profiler
     {
         $conf = self::getConfiguration();
         $totals = self::getTotals();
-        return (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
+        return !$conf->enableFilters || (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
                (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold);
     }
 
