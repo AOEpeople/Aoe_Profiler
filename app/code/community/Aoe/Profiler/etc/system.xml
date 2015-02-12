@@ -7,59 +7,99 @@
  */
 -->
 <config>
-	<sections>
-		<dev>
-			<groups>
-				<debug>
-					<fields>
-						<showDisabledMessage translate="label">
-							<label>Show disabled message</label>
-							<comment><![CDATA[If the profiler is enabled in configuration but not triggered (by url parameter, cookie or hardcoded Varien_Profiler::enable()) a message will appear below the rendered page with a profiler link.]]></comment>
-							<frontend_type>select</frontend_type>
-							<source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>100</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</showDisabledMessage>
-						<hideLinesFasterThan translate="label">
-							<label>Hide lines faster than</label>
-							<comment><![CDATA[in ms]]></comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>110</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</hideLinesFasterThan>
-						<logInvalidNesting translate="label comment">
-							<label>Log invalid nesting</label>
-							<comment><![CDATA[Write information to system log when buckets are not started / stopped in correct order.]]></comment>
-							<frontend_type>select</frontend_type>
-							<source_model>adminhtml/system_config_source_yesno</source_model>
-							<sort_order>120</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</logInvalidNesting>
-						<profileDir translate="label">
-							<label>Profile Storage Dir</label>
-							<comment><![CDATA[Leave blank to use var/profile. May specify any absolute path.]]></comment>
-							<frontend_type>text</frontend_type>
-							<sort_order>130</sort_order>
-							<show_in_default>1</show_in_default>
-						</profileDir>
+    <sections>
+        <dev>
+            <groups>
+                <debug>
+
+
+                    <comment><![CDATA[The AOE Profiler is being configured in <em>var/aoe_profiler.xml</em>. You have three options for <strong>config > aoe_profiler > trigger</strong>: 'always', 'never' and 'parameter'.<br />
+                    If you choose '<strong>parameter</strong>' then profiling is being triggered by a GET parameter '?profile=1' or a cookie 'profile=1'. Since you probably don't want to mess with the urls and might not have
+                    access to the urls for redirects or ajax requests using a cookie is the more elegant solution. Following bookmarklets help you to set the cookie. Just drag them to your browser's bookmarks
+                    and control AOE Profiler from there: <br />
+
+                    <ul>
+                        <li><a href="javascript:(/** @version 0.5.2 */function() {document.cookie='profile=1;path=/;';})()">[AOE Profiler] Enable Profiling</a></li>
+                        <li><a href="javascript:(/** @version 0.5.2 */function() {document.cookie='profile=0;expires=Mon, 05 Jul 2000 00:00:00 GMT;path=/;';})()">[AOE Profiler] Disable Profiling</a></li>
+                    </ul>
+                    ]]></comment>
+
+
+                    <fields>
+                        <profiler>
+                            <frontend_type>note</frontend_type>
+                            <comment><![CDATA[Please configure the profiler in <em>var/aoe_profiler.xml</em>. Find a sample configuration file in the module's var directory.]]></comment>
+                        </profiler>
+                        <hideLinesFasterThan translate="label">
+                            <label>Hide lines faster than</label>
+                            <comment><![CDATA[in ms<br />This is the default value for the slider in the run detail view that allows you to filter fast lines.]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </hideLinesFasterThan>
+                        <logInvalidNesting translate="label comment">
+                            <label>Log invalid nesting</label>
+                            <comment><![CDATA[Write information to system log when buckets are not started / stopped in correct order.]]></comment>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </logInvalidNesting>
                         <remoteCallUrlTemplate translate="label">
                             <label>Remote call url template</label>
-                            <comment><![CDATA[First %s will be replaced by file, second %s by line number]]></comment>
+                            <comment><![CDATA[%1$s will be replaced by file<br />%2$s by line number<br />
+                            Enable capturing the backtraces required for this feature to work in var/aoe_profiler.xml: config > aoe_profiler > captureBacktraces]]></comment>
+                            <depends><captureBacktraces separator="|">parameter|always</captureBacktraces></depends>
                             <frontend_type>text</frontend_type>
-                            <sort_order>140</sort_order>
+                            <sort_order>160</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </remoteCallUrlTemplate>
-					</fields>
-				</debug>
-			</groups>
-		</dev>
-	</sections>
+                        <scheduler_cron_expr_profiler translate="label">
+                            <label>Old runs cleanup schedule</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>160</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </scheduler_cron_expr_profiler>
+                        <keepDays translate="label">
+                            <label>Max age of saved run data</label>
+                            <comment><![CDATA[Please note that the aoe_profiler_run table might grow quickly (depending on the traffic and the sampling rate) and that every row could be big.]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>160</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </keepDays>
+                        <enableDbProfiling translate="label">
+                            <label>Enable DB Profiling</label>
+                            <comment><![CDATA[Add this to your local.xml: <br /><pre>
+&lt;config&gt;
+    &lt;global&gt;
+        &lt;resources&gt;
+            &lt;default_setup&gt;
+                &lt;connection&gt;
+                    &lt;profiler&gt;1&lt;/profiler&gt;
+                &lt;/connection&gt;
+            &lt;/default_setup&gt;
+        &lt;/resources&gt;
+    &lt;/global&gt;
+&lt;/config&gt;</pre>]]></comment>
+                            <frontend_type>note</frontend_type>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enableDbProfiling>
+                    </fields>
+                </debug>
+            </groups>
+        </dev>
+    </sections>
 </config>

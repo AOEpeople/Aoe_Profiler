@@ -1,0 +1,19 @@
+<?php
+/**
+ * @var $this Aoe_Profiler_Block_Adminhtml_Profiler_View
+ */
+?>
+<div class="content-header">
+<table cellspacing="0">
+    <tr>
+        <td style="width:50%;"><h3 class="icon-head"><?php echo Mage::helper('aoe_profiler')->__('Aoe Profiler run details') ?></h3></td>
+        <td class="a-right">
+            <?php echo $this->getButtonsHtml() ?>
+        </td>
+    </tr>
+</table>
+</div>
+<?php echo $this->getChildHtml('aoe_profiler_filter') ?>
+<div>
+    <?php echo $this->getChildHtml('aoe_profiler_tree') ?>
+</div>

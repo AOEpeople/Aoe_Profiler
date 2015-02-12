@@ -1,0 +1,24 @@
+language: php
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+matrix:
+  allow_failures:
+  - php: 5.6
+  - php: hhvm
+env:
+  - MAGENTO_VERSION=magento-ce-1.9.0.1
+  - MAGENTO_VERSION=magento-ce-1.8.1.0
+  - MAGENTO_VERSION=magento-ce-1.8.0.0
+  - MAGENTO_VERSION=magento-ce-1.7.0.2
+script:
+  - curl -sSL https://raw.githubusercontent.com/AOEpeople/MageTestStand/master/setup.sh | bash
+notifications:
+  email:
+    recipients:
+      - travis@fabrizio-branca.de
+    on_success: always
+    on_failure: always

@@ -1,6 +1,6 @@
 {
-    "name": "fbrnc/Aoe_Profiler",
-    "license": "OSL-3.0",
+    "name": "aoepeople/aoe_profiler",
+    "license": "GPLv3",
     "type": "magento-module",
     "description": "Magento Profiler",
     "homepage": "http://www.fabrizio-branca.de/magento-profiler.html",
@@ -10,7 +10,7 @@
     "authors":[
         {
             "name":"Fabrizio Branca",
-            "email":"mail@{firstname}-{lastname}.de"
+            "email":"fabrizio.branca@aoe.com"
         }
     ]
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<config>
+    <menu>
+        <system>
+            <children>
+                <aoe_profiler translate="title" module="aoe_profiler">
+                    <title>AOE Profiler</title>
+                    <sort_order>35</sort_order>
+                    <depends>
+                        <module>Aoe_Profiler</module>
+                    </depends>
+                    <action>adminhtml/profiler</action>
+                </aoe_profiler>
+            </children>
+        </system>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <aoe_profiler translate="title" module="aoe_profiler">
+                                <title>AOE Profiler</title>
+                                <sort_order>35</sort_order>
+                            </aoe_profiler>
+                        </children>
+                    </system>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <aoe_profiler translate="title">
+                                        <title>AOE Profiler Section</title>
+                                        <sort_order>35</sort_order>
+                                    </aoe_profiler>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+This configuration file is used to configure Aoe_Profiler. Since profiling starts long before the configuration is being read
+these settings can't be core_config_data (System > Configuration)
+
+If you run Magento on multiple nodes makes sure this file is present on configured correctly on every node that's supposed to
+log data.
+
+This file is expected to be in var/aoe_profiler.xml
+-->
+<config>
+    <aoe_profiler>
+
+        <!--
+        'always': Every request will be logged (filters apply if enabled...)
+        'never': nothing will be logged. (The absence of this xml configuration implies 'never')
+        'parameter': controlled via get parameter '?profile=1' or cookie (profile).
+        Check System > Configuration for bookmarklets.
+        -->
+        <trigger>parameter</trigger><!-- 'always', 'parameter', or 'never' -->
+
+        <!--
+        If this is set to '0' (and profiling triggered) EVERY request will be logged.
+        This may end in a lot of data and in a general performance loss of your site.
+        This is only recommended on dev environments.
+        If set to '1' the following filters apply.
+        -->
+        <enableFilters>1</enableFilters>
+
+        <filters>
+
+            <!--
+            This controls how many samples will be recorded. Other filters still apply. Examples:
+            100 => every request will be logged
+            25 => only every fourth request will be logged
+            0.01 => only one in 10,000 requests will be logged.
+            -->
+            <sampling>100</sampling>
+
+            <!--
+            Only requests running longern than the configured time will be logged. Set to '0' to log everything. (Other filters still apply)
+            -->
+            <timeThreshold>0</timeThreshold><!-- in seconds -->
+
+            <!--
+            Only requests consuming more than the configured memory will be logged. Set to '0' to log everything. (Other filters still apply)
+            -->
+            <memoryThreshold>0</memoryThreshold><!-- in bytes -->
+
+            <!--
+            Regex pattern for $_SERVER['REQUEST_URI']. If empty the whitelist/blacklist is not active (whitelist will allow everything and blacklist
+            won't block anything). The whitelist has a higher priority than the blacklist
+            -->
+            <requestUriWhiteList><![CDATA[]]></requestUriWhiteList>
+            <requestUriBlackList><![CDATA[/^\/index\.php\/admin\//]]></requestUriBlackList><!-- this example blocks all admin urls -->
+        </filters>
+
+        <!--
+        This might slow down page rendering, but will show you the classname
+        and the entity id instead of '__EAV_LOAD_MODEL__' only.
+        -->
+        <captureModelInfo>1</captureModelInfo>
+
+        <!--
+        This might slow down page rendering, but will allow you to click on the lines in the profile output
+        to make PHPStorm jump to the code (if using the "RemoteCall" plugin)
+        -->
+        <captureBacktraces>0</captureBacktraces>
+
+    </aoe_profiler>
+</config>

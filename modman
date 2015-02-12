@@ -1,6 +1,7 @@
-app/etc/modules/*						app/etc/modules/
+app/etc/modules/Aoe_Profiler.xml						app/etc/modules/Aoe_Profiler.xml
 app/code/community/Aoe/Profiler				app/code/community/Aoe/Profiler
 app/code/community/Varien/Profiler.php		app/code/community/Varien/Profiler.php
 app/code/community/Zend/Db/Profiler.php		app/code/community/Zend/Db/Profiler.php
-skin/frontend/base/default/aoe_profiler		skin/frontend/base/default/aoe_profiler
-skin/adminhtml/base/default/aoe_profiler	skin/adminhtml/base/default/aoe_profiler
+skin/adminhtml/default/default/aoe_profiler	skin/adminhtml/default/default/aoe_profiler
+app/design/adminhtml/default/default/layout/aoe_profiler  app/design/adminhtml/default/default/layout/aoe_profiler
+app/design/adminhtml/default/default/template/aoe_profiler  app/design/adminhtml/default/default/template/aoe_profiler
