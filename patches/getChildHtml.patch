@@ -1,0 +1,20 @@
+diff --git a/app/code/core/Mage/Core/Block/Abstract.php b/app/code/core/Mage/Core/Block/Abstract.php
+index e075bdc..9b57b50 100644
+--- a/app/code/core/Mage/Core/Block/Abstract.php
++++ b/app/code/core/Mage/Core/Block/Abstract.php
+@@ -628,6 +628,7 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
+             return $this->_childrenHtmlCache[$name];
+         }
+ 
++        Varien_Profiler::start($name, Varien_Profiler::TYPE_BLOCK);
+         $child = $this->getChild($name);
+ 
+         if (!$child) {
+@@ -638,6 +639,7 @@ abstract class Mage_Core_Block_Abstract extends Varien_Object
+         }
+ 
+         $this->_childrenHtmlCache[$name] = $html;
++        Varien_Profiler::stop($name);
+         return $html;
+     }
+ 

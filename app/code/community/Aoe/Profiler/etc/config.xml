@@ -49,6 +49,7 @@
         </resources>
 
         <events>
+
             <controller_front_send_response_after>
                 <observers>
                     <persistent>
@@ -57,8 +58,28 @@
                     </persistent>
                 </observers>
             </controller_front_send_response_after>
-        </events>
 
+            <!--<core_block_abstract_to_html_before>-->
+                <!--<observers>-->
+                    <!--<aoe_profiler>-->
+                        <!--<type>singleton</type>-->
+                        <!--<class>aoe_profiler/observer</class>-->
+                        <!--<method>core_block_abstract_to_html_before</method>-->
+                    <!--</aoe_profiler>-->
+                <!--</observers>-->
+            <!--</core_block_abstract_to_html_before>-->
+
+            <!--<core_block_abstract_to_html_after>-->
+                <!--<observers>-->
+                    <!--<aoe_profiler>-->
+                        <!--<type>singleton</type>-->
+                        <!--<class>aoe_profiler/observer</class>-->
+                        <!--<method>core_block_abstract_to_html_after</method>-->
+                    <!--</aoe_profiler>-->
+                <!--</observers>-->
+            <!--</core_block_abstract_to_html_after>-->
+
+        </events>
 
     </global>
 

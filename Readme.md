@@ -10,6 +10,10 @@ Copy the aoe_profiler.xml.sample file to var/aoe_profiler.xml and find some docu
 
 Find some more settings in System > Configuration > Developer > Debug > Profiler.
 
+## Configuration
+
+Find it in: `System > Configuration > Advanced > Developer > Debug`
+
 ## Enable database profiling
 
 Add this to your local.xml:

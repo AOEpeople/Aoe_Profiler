@@ -51,9 +51,7 @@
                         </logInvalidNesting>
                         <remoteCallUrlTemplate translate="label">
                             <label>Remote call url template</label>
-                            <comment><![CDATA[%1$s will be replaced by file<br />%2$s by line number<br />
-                            Enable capturing the backtraces required for this feature to work in var/aoe_profiler.xml: config > aoe_profiler > captureBacktraces]]></comment>
-                            <depends><captureBacktraces separator="|">parameter|always</captureBacktraces></depends>
+                            <comment><![CDATA[%1$s will be replaced by file<br />%2$s by line number<br />Enable capturing the backtraces required for this feature to work in var/aoe_profiler.xml: config > aoe_profiler > captureBacktraces]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>160</sort_order>
                             <show_in_default>1</show_in_default>

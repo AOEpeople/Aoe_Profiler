@@ -103,6 +103,7 @@ class Varien_Profiler
      */
     public static function isEnabled()
     {
+        // file_put_contents('/tmp/prof', __LINE__ . "\n", FILE_APPEND);
         if (!self::$_checkedEnabled) {
             self::$_checkedEnabled = true;
 
@@ -155,6 +156,10 @@ class Varien_Profiler
     {
         if (!self::isEnabled()) {
             return;
+        }
+
+        if ($type) {
+            file_put_contents('/tmp/prof',mageDebugBacktrace(true) . "TYPE: $type\n", FILE_APPEND);
         }
 
         $currentPointer = 'timetracker_' . self::$uniqueCounter++;
@@ -231,18 +236,23 @@ class Varien_Profiler
              * For blocks let's jump the the block class
              */
             case Varien_Profiler::TYPE_BLOCK:
-                $node = $trace[1]['args'][0];
-                /* @var $node Varien_Simplexml_Element */
-                if (!empty($node['class'])) {
-                    $className = (string)$node['class'];
-                } else {
-                    $className = (string)$node['type'];
+                $className = false;
+                if (isset($trace[1]['args'][0])) {
+                    $node = $trace[1]['args'][0];
+                    /* @var $node Varien_Simplexml_Element */
+                    if (!empty($node['class'])) {
+                        $className = (string)$node['class'];
+                    } elseif (isset($node['type'])) {
+                        $className = (string)$node['type'];
+                    }
+                    if ($className) {
+                        $className = Mage::getConfig()->getBlockClassName($className);
+                        $fileAndLine = array(
+                            'file' => mageFindClassFile($className),
+                            'line' => 0,
+                        );
+                    }
                 }
-                $className = Mage::getConfig()->getBlockClassName($className);
-                $fileAndLine = array(
-                    'file' => mageFindClassFile($className),
-                    'line' => 0,
-                );
                 break;
 
             /**
@@ -517,12 +527,22 @@ class Varien_Profiler
         }
     }
 
+    /**
+     * Check threshold
+     * (Decides if a captured run will be stored or not)
+     *
+     * @return bool
+     */
     public static function checkThresholds()
     {
         $conf = self::getConfiguration();
         $totals = self::getTotals();
-        return !$conf->enableFilters || (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
-               (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold);
+        if (!$conf->enableFilters) {
+            return true;
+        }
+        $timeThreshold = (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold);
+        $memoryThreshold = (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold);
+        return $timeThreshold && $memoryThreshold;
     }
 
     /**
