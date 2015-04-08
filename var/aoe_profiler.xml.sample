@@ -38,7 +38,7 @@ This file is expected to be in var/aoe_profiler.xml
             <sampling>100</sampling>
 
             <!--
-            Only requests running longern than the configured time will be logged. Set to '0' to log everything. (Other filters still apply)
+            Only requests running longer than the configured time will be logged. Set to '0' to log everything. (Other filters still apply)
             -->
             <timeThreshold>0</timeThreshold><!-- in seconds -->
 
