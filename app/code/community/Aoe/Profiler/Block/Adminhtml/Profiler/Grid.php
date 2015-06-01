@@ -91,6 +91,25 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
     }
 
     /**
+     * Add mass-actions to grid
+     *
+     * @return $this
+     */
+    protected function _prepareMassaction()
+    {
+        $this->setMassactionIdField('id');
+        $this->getMassactionBlock()->setFormFieldName('profile');
+        $this->getMassactionBlock()->addItem(
+            'delete',
+            array(
+                'label' => $this->__('Delete'),
+                'url'   => $this->getUrl('*/*/massDelete'),
+            )
+        );
+        return $this;
+    }
+
+    /**
      * Row click url
      *
      * @param object $row
