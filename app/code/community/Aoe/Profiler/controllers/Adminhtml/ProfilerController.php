@@ -84,6 +84,102 @@ class Aoe_Profiler_Adminhtml_ProfilerController extends Mage_Adminhtml_Controlle
     }
 
     /**
+     * Edit layout instance action
+     *
+     */
+    public function deleteAction()
+    {
+        if ($stack = $this->_initStackInstance()) {
+            try {
+                // init model and delete
+                $stack->delete();
+                // display success message
+                Mage::getSingleton('adminhtml/session')->addSuccess(
+                    Mage::helper('aoe_profiler')->__('The profile has been deleted.')
+                );
+                // go to grid
+                $this->_redirect('*/*/');
+                return;
+            } catch (Mage_Core_Exception $e) {
+                $this->_getSession()->addError($e->getMessage());
+            } catch (Exception $e) {
+                $this->_getSession()->addError(
+                    Mage::helper('aoe_profiler')->__('An error occurred while deleting profile data. Please review log and try again.')
+                );
+                Mage::logException($e);
+                // redirect to edit form
+                $this->_redirect('*/*/view', array('_current' => true));
+                return;
+            }
+        }
+        // display error message
+        Mage::getSingleton('adminhtml/session')->addError(
+            Mage::helper('aoe_profiler')->__('Unable to find a profile to delete.')
+        );
+        // go to grid
+        $this->_redirect('*/*/');
+    }
+
+    /**
+     * Delete specified banners using grid massaction
+     *
+     */
+    public function massDeleteAction()
+    {
+        $ids = $this->getRequest()->getParam('profile');
+        if (!is_array($ids)) {
+            $this->_getSession()->addError($this->__('Please select profile(s).'));
+        } else {
+            try {
+                foreach ($ids as $id) {
+                    $stack = $this->_initStackInstance();
+                    $stack->delete();
+                }
+
+                $this->_getSession()->addSuccess(
+                    $this->__('Total of %d record(s) have been deleted.', count($ids))
+                );
+            } catch (Mage_Core_Exception $e) {
+                $this->_getSession()->addError($e->getMessage());
+            } catch (Exception $e) {
+                $this->_getSession()->addError(
+                    Mage::helper('aoe_profiler')->__('An error occurred while mass deleting profiles. Please review log and try again.')
+                );
+                Mage::logException($e);
+                return;
+            }
+        }
+        $this->_redirect('*/*/index');
+    }
+
+    /***
+     * Render Profile to a file
+     */
+    public function renderAction()
+    {
+        try{
+            $stack = $this->_initStackInstance();
+            $filename = Mage::helper('aoe_profiler')->renderProfilerOutputToFile();
+            $this->_getSession()->addSuccess(
+                $this->__('Render successful. Please go to <a href="%s">this page.</a>', Mage::getStoreConfig(Mage_Core_Model_Url::XML_PATH_SECURE_URL).'var/profile/' . $filename)
+            );
+        } catch (Mage_Core_Exception $e) {
+            $this->_getSession()->addError($e->getMessage());
+        } catch (Exception $e) {
+            $this->_getSession()->addError(
+                Mage::helper('aoe_profiler')->__('An error occurred while mass deleting profiles. Please review log and try again.')
+            );
+            Mage::logException($e);
+            return;
+        }
+
+        // go to grid
+        $this->_redirect('*/*/');
+
+    }
+
+
+    /**
      * Check is allowed access to action
      *
      * @return bool
