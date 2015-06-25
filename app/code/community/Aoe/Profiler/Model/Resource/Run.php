@@ -5,7 +5,7 @@
  * @author Fabrizio Branca
  * @since 2014-02-01
  */
-class Aoe_Profiler_Model_Resource_Run extends Mage_Core_Model_Resource_Db_Abstract {
+class Aoe_Profiler_Model_Resource_Run extends Mage_Core_Model_Mysql4_Abstract {
 
     /**
      * Resource initialization
