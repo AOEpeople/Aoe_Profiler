@@ -181,7 +181,7 @@ class Varien_Profiler
             self::$stackLog[$currentPointer]['detail'] = "$className, id: $entityId, attributes: " . var_export($attributes, true);
         }
 
-        if (self::getConfiguration()->captureBacktraces) {
+        if (!empty(self::getConfiguration()->captureBacktraces)) {
             $trace = isset($trace) ? $trace : debug_backtrace();
             $fileAndLine = self::getFileAndLine($trace, $type, $name);
             self::$stackLog[$currentPointer]['file'] = $fileAndLine['file'];
