@@ -181,7 +181,7 @@ class Varien_Profiler
             self::$stackLog[$currentPointer]['detail'] = "$className, id: $entityId, attributes: " . var_export($attributes, true);
         }
 
-        if (self::getConfiguration()->captureBacktraces) {
+        if (!empty(self::getConfiguration()->captureBacktraces)) {
             $trace = isset($trace) ? $trace : debug_backtrace();
             $fileAndLine = self::getFileAndLine($trace, $type, $name);
             self::$stackLog[$currentPointer]['file'] = $fileAndLine['file'];
@@ -521,7 +521,7 @@ class Varien_Profiler
     {
         $conf = self::getConfiguration();
         $totals = self::getTotals();
-        return !$conf->enableFilters || (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
+        return empty($conf->enableFilters) || (!$conf->filters->timeThreshold || $totals['time'] > $conf->filters->timeThreshold) &&
                (!$conf->filters->memoryThreshold || $totals['realmem'] > $conf->filters->memoryThreshold);
     }
 
