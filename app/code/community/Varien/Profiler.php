@@ -173,7 +173,7 @@ class Varien_Profiler
             'type' => $type,
         );
 
-        if ($name == '__EAV_LOAD_MODEL__' && self::getConfiguration()->captureModelInfo) {
+        if ($name == '__EAV_LOAD_MODEL__' && !empty(self::getConfiguration()->captureModelInfo)) {
             $trace = debug_backtrace();
             $className = get_class($trace[1]['args'][0]);
             $entityId = isset($trace[1]['args'][1]) ? $trace[1]['args'][1] : 'not set';
