@@ -1,0 +1,37 @@
+<?php
+/**
+ * @var $this Aoe_Profiler_Block_Info
+ */
+$_stack = $this->getStack();
+?>
+<div class="entry-edit">
+    <div class="entry-edit-head"><h4 class="icon-head"><?php echo $this->__('Run Details') ?></h4></div>
+    <fieldset>
+        <table cellspacing="2" class="box-left">
+            <tr>
+                <td><strong><?php echo $this->__('Created:') ?></strong></td>
+                <td><?php echo $this->formatDate($_stack->getCreatedAt(), Mage_Core_Model_Locale::FORMAT_TYPE_MEDIUM, true); ?></td>
+            </tr>
+            <tr>
+                <td><strong><?php echo $this->__('Route:') ?></strong></td>
+                <td><?php echo $this->escapeHtml($_stack->getRoute()); ?></td>
+            </tr>
+            <tr>
+                <td><strong><?php echo $this->__('URL:') ?></strong></td>
+                <td><?php echo $this->escapeHtml($_stack->getUrl()); ?></td>
+            </tr>
+            <tr>
+                <td><strong><?php echo $this->__('Session Id:') ?></strong></td>
+                <td><?php echo $this->escapeHtml($_stack->getSessionId()); ?></td>
+            </tr>
+            <tr>
+                <td><strong><?php echo $this->__('Time [sec]:') ?></strong></td>
+                <td><?php echo $this->escapeHtml($_stack->getTotalTime()); ?></td>
+            </tr>
+            <tr>
+                <td><strong><?php echo $this->__('Memory [MB]') ?></strong></td>
+                <td><?php echo $this->escapeHtml($_stack->getTotalMemory()); ?></td>
+            </tr>
+        </table>
+    </fieldset>
+</div>
