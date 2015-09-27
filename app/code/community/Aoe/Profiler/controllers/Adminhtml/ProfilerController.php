@@ -90,6 +90,32 @@ class Aoe_Profiler_Adminhtml_ProfilerController extends Mage_Adminhtml_Controlle
     }
 
     /**
+     * @return void
+     */
+    public function massDeleteAction()
+    {
+        $ids = $this->getRequest()->getParam('stack');
+        if (!is_array($ids)) {
+            $this->_getSession()->addError($this->__('Please select stack(s).'));
+        } else {
+            if (!empty($ids)) {
+                try {
+                    foreach ($ids as $id) {
+                        $stack = Mage::getSingleton('aoe_profiler/run')->load($id);
+                        $stack->delete();
+                    }
+                    $this->_getSession()->addSuccess(
+                        $this->__('Total of %d record(s) have been deleted.', count($ids))
+                    );
+                } catch (Exception $e) {
+                    $this->_getSession()->addError($e->getMessage());
+                }
+            }
+        }
+        $this->_redirect('*/*/index');
+    }
+
+    /**
      * Edit layout instance action
      *
      */
