@@ -3,7 +3,7 @@
 class Aoe_Profiler_Block_Info extends Mage_Adminhtml_Block_Template
 {
     /**
-     * @return var Aoe_Profiler_Model_Run
+     * @return Aoe_Profiler_Model_Run
      */
     public function getStack()
     {

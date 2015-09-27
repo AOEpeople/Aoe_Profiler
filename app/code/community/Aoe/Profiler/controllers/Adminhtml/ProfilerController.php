@@ -48,6 +48,27 @@ class Aoe_Profiler_Adminhtml_ProfilerController extends Mage_Adminhtml_Controlle
         return false;
     }
 
+
+    /**
+     * Delete the selected stack instance.
+     *
+     * @return void
+     */
+    public function deleteAction()
+    {
+        try {
+            $stack = $this->_initStackInstance();
+            if ($stack) {
+                $stack->delete();
+                $this->_getSession()->addSuccess( $this->__( 'The entry has been deleted.' ) );
+            }
+        } catch (Exception $e) {
+            $this->_getSession()->addError($e->getMessage());
+        }
+
+        $this->_redirect('*/*/');
+    }
+
     /**
      * Layout Grid
      */
