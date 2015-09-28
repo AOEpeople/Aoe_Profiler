@@ -48,6 +48,27 @@ class Aoe_Profiler_Adminhtml_ProfilerController extends Mage_Adminhtml_Controlle
         return false;
     }
 
+
+    /**
+     * Delete the selected stack instance.
+     *
+     * @return void
+     */
+    public function deleteAction()
+    {
+        try {
+            $stack = $this->_initStackInstance();
+            if ($stack) {
+                $stack->delete();
+                $this->_getSession()->addSuccess( $this->__( 'The entry has been deleted.' ) );
+            }
+        } catch (Exception $e) {
+            $this->_getSession()->addError($e->getMessage());
+        }
+
+        $this->_redirect('*/*/');
+    }
+
     /**
      * Layout Grid
      */
@@ -66,6 +87,32 @@ class Aoe_Profiler_Adminhtml_ProfilerController extends Mage_Adminhtml_Controlle
     {
         $this->loadLayout();
         $this->renderLayout();
+    }
+
+    /**
+     * @return void
+     */
+    public function massDeleteAction()
+    {
+        $ids = $this->getRequest()->getParam('stack');
+        if (!is_array($ids)) {
+            $this->_getSession()->addError($this->__('Please select stack(s).'));
+        } else {
+            if (!empty($ids)) {
+                try {
+                    foreach ($ids as $id) {
+                        $stack = Mage::getSingleton('aoe_profiler/run')->load($id);
+                        $stack->delete();
+                    }
+                    $this->_getSession()->addSuccess(
+                        $this->__('Total of %d record(s) have been deleted.', count($ids))
+                    );
+                } catch (Exception $e) {
+                    $this->_getSession()->addError($e->getMessage());
+                }
+            }
+        }
+        $this->_redirect('*/*/index');
     }
 
     /**

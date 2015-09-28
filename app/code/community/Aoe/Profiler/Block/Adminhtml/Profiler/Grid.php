@@ -20,6 +20,17 @@ class Aoe_Profiler_Block_Adminhtml_Profiler_Grid extends Mage_Adminhtml_Block_Wi
         $this->setUseAjax(true);
     }
 
+    protected function _prepareMassaction() {
+        $this->setMassactionIdField('stack_id');
+        $this->getMassactionBlock()->setFormFieldName('stack');
+
+        $this->getMassactionBlock()->addItem('delete', array(
+            'label' => Mage::helper('aoe_profiler')->__('Delete'),
+            'url' => $this->getUrl('*/*/massDelete'),
+            'confirm' => Mage::helper('aoe_profiler')->__('Are you sure?')
+        ) );
+    }
+
     /**
      * Prepare grid collection object
      *
