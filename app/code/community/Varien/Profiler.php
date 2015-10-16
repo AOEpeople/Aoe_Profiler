@@ -579,12 +579,12 @@ class Varien_Profiler
     public static function getTimers()
     {
         if (!self::$_timers) {
-            self::$_timers = [];
+            self::$_timers = array();
             foreach (self::getStackLog() as $stackLogItem) {
                 $timerName = end($stackLogItem['stack']);
                 reset($stackLogItem['stack']);
                 if (!isset(self::$_timers[$timerName])) {
-                    self::$_timers[$timerName] = [
+                    self::$_timers[$timerName] = array(
                         'start' => false,
                         'count' => 0,
                         'sum' => 0,
@@ -592,7 +592,7 @@ class Varien_Profiler
                         'emalloc' => 0,
                         'realmem_start' => $stackLogItem['realmem_start'],
                         'emalloc_start' => 0, //$stackLogItem['emalloc_start']
-                    ];
+                    );
                 }
                 self::$_timers[$timerName]['count'] += 1;
                 self::$_timers[$timerName]['sum'] += $stackLogItem['time_total'];
