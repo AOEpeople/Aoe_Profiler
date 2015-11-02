@@ -36,6 +36,8 @@ class Varien_Profiler
 
     static private $_configuration;
 
+    static private $_timers = array();
+
     /**
      * Get configuration object
      *
@@ -561,12 +563,44 @@ class Varien_Profiler
 
     public static function fetch($timerName, $key = 'sum')
     {
-        return false;
+        $timers = self::getTimers();
+        if (!isset($timers[$timerName])) {
+            return false;
+        }
+        if (!$key) {
+            return $timers[$timerName];
+        }
+        if (!isset($timers[$timerName][$key])) {
+            return false;
+        }
+        return $timers[$timerName][$key];
     }
 
     public static function getTimers()
     {
-        return array();
+        if (!self::$_timers) {
+            self::$_timers = array();
+            foreach (self::getStackLog() as $stackLogItem) {
+                $timerName = end($stackLogItem['stack']);
+                reset($stackLogItem['stack']);
+                if (!isset(self::$_timers[$timerName])) {
+                    self::$_timers[$timerName] = array(
+                        'start' => false,
+                        'count' => 0,
+                        'sum' => 0,
+                        'realmem' => 0,
+                        'emalloc' => 0,
+                        'realmem_start' => $stackLogItem['realmem_start'],
+                        'emalloc_start' => 0, //$stackLogItem['emalloc_start']
+                    );
+                }
+                self::$_timers[$timerName]['count'] += 1;
+                self::$_timers[$timerName]['sum'] += $stackLogItem['time_total'];
+                self::$_timers[$timerName]['realmem'] += $stackLogItem['realmem_total'];
+                //self::$_timers[$timerName]['emalloc'] += $stackLogItem['emalloc_total'];
+            }
+        }
+        return self::$_timers;
     }
 
     public static function getSqlProfiler($res)
