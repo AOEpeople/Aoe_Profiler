@@ -402,8 +402,9 @@ class Varien_Profiler
                 return;
             }
 
-            $name = '[INVALID NESTING!] ' . $name;
-            self::start($name);
+            // We shouldn't add another name to the stack if we've already crawled up to the current one...
+            // $name = '[INVALID NESTING!] ' . $name;
+            // self::start($name);
             // return;
             // throw new Exception(sprintf("Invalid nesting! Expected: '%s', was: '%s'", $currentName, $name));
         }
