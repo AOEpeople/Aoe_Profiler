@@ -4,6 +4,8 @@
 
 http://www.fabrizio-branca.de/magento-profiler.html
 
+For the Magento 2 version of this extension, please visit: https://github.com/perryholden/Holdenovi_Profiler
+
 ## Usage
 
 Copy the aoe_profiler.xml.sample file to var/aoe_profiler.xml and find some documentation on what the settings mean in that file.
