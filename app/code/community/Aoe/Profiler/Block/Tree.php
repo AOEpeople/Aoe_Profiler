@@ -75,7 +75,7 @@ class Aoe_Profiler_Block_Tree extends Mage_Core_Block_Abstract
                 $type = Varien_Profiler::getType($tmp['type'], $label);
 
 
-                $output .= '<span class="caption type-' . $type . '" title="' . htmlspecialchars($label) . '" />';
+                $output .= '<span class="caption type-' . $type . '" title="' . htmlspecialchars($label) . '" >';
 
                 if (isset($tmp['file'])) {
                     $remoteCallUrlTemplate = Mage::getStoreConfig('dev/debug/remoteCallUrlTemplate');
@@ -223,7 +223,7 @@ class Aoe_Profiler_Block_Tree extends Mage_Core_Block_Abstract
         $offset = round(min(99, $offset));
 
         $output = '<div class="progress">';
-        $output .= '<div class="progress-bar">';
+        $output .= '<div class="progress-bar-aoe">';
         $output .= '<div class="progress-bar1" style="width: ' . $percent1 . '%; margin-left: ' . $offset . '%;"></div>';
 
         if ($percent2 > 0) {
