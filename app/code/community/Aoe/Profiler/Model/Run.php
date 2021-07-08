@@ -132,9 +132,17 @@ class Aoe_Profiler_Model_Run extends Mage_Core_Model_Abstract
                     if (!isset($this->stackLog[$key][$metric . '_' . $column])) {
                         continue;
                     }
-                    $this->stackLog[$key][$metric . '_rel_' . $column] = $this->stackLog[$key][$metric . '_' . $column] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                    if($this->stackLog['timetracker_0'][$metric . '_total'] > 0) {
+                        $this->stackLog[$key][$metric . '_rel_' . $column] = $this->stackLog[$key][$metric . '_' . $column] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                    } else {
+                        $this->stackLog[$key][$metric . '_rel_' . $column] = 0;
+                    }
                 }
-                $this->stackLog[$key][$metric . '_rel_offset'] = $this->stackLog[$key][$metric . '_start_relative'] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                if($this->stackLog['timetracker_0'][$metric . '_total'] > 0) {
+                    $this->stackLog[$key][$metric . '_rel_offset'] = $this->stackLog[$key][$metric . '_start_relative'] / $this->stackLog['timetracker_0'][$metric . '_total'];
+                } else {
+                    $this->stackLog[$key][$metric . '_rel_offset'] = 0;
+                }
             }
         }
     }
