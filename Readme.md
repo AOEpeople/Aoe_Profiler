@@ -8,9 +8,14 @@ For the Magento 2 version of this extension, please visit: https://github.com/pe
 
 ## Usage
 
-Copy the aoe_profiler.xml.sample file to var/aoe_profiler.xml and find some documentation on what the settings mean in that file.
+1. Copy the files into magento root
+
+2. Copy the aoe_profiler.xml.sample file to var/aoe_profiler.xml and find some documentation on what the settings mean in that file.
+
+3. See the results in System > AOE Profiler
 
 Find some more settings in System > Configuration > Developer > Debug > Profiler.
+
 
 ## Enable database profiling
 
